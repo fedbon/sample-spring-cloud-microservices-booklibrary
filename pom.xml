@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+    </parent>
+
+    <groupId>ru.fedbon</groupId>
+    <artifactId>sample-spring-cloud-microservices-bookstore</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>book-service</module>
+        <module>security-service</module>
+        <module>eureka-discovery-server</module>
+        <module>gateway-service</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <spring-shell-starter.version>3.1.4</spring-shell-starter.version>
+
+        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <spring-cloud-starter-netflix.version>4.1.0</spring-cloud-starter-netflix.version>
+
+        <h2.version>2.2.224</h2.version>
+        <mongock.version>4.3.8</mongock.version>
+        <flapdoodle.version>4.11.0</flapdoodle.version>
+        <jquery.version>3.7.1</jquery.version>
+
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
+
+        <checkstyle-plugin.version>3.3.0</checkstyle-plugin.version>
+        <checkstyle.version>10.9.1</checkstyle.version>
+        <checkstyle.config.url>
+            https://raw.githubusercontent.com/OtusTeam/Spring/master/checkstyle.xml
+        </checkstyle.config.url>
+
+        <opencsv.version>5.8</opencsv.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
+    </properties>
+
+</project>

@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:30002/localmongo
+  cloud:
+    discovery:
+      enabled: true
+  application:
+    name: book-service
+
+mongock:
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.fedbon.bookservice.mongock.changelog
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+
+logging:
+  level:
+    root: INFO

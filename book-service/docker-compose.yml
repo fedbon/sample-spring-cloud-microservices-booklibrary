@@ -1,0 +1,8 @@
+services:
+  mongo:
+    container_name: localmongo
+    image: mongo:latest
+    ports:
+      - 30002:27017
+    restart: always
+    command: mongod --bind_ip_all
