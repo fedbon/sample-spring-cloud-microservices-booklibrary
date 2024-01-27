@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -88,7 +87,7 @@ public class BookController {
     }
 
     @GetMapping
-    public Flux<BookDto> handleGetAll(ServerHttpRequest request) {
+    public Flux<BookDto> handleGetAll() {
         return bookRepository.findAll(Sort.by(Sort.Direction.ASC, "id"))
                 .map(BookMapper::mapBookToDto);
     }

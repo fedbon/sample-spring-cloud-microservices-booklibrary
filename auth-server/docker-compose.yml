@@ -1,8 +1,8 @@
 services:
   mongo:
-    container_name: book-service-mongodb
+    container_name: auth-server-mongodb
     image: mongo:latest
     ports:
-      - 30003:27017
+      - 30002:27017
     restart: always
     command: mongod --bind_ip_all

@@ -1,10 +1,10 @@
 server:
-  port: 8080
+  port: 8765
 
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:30002/localmongo
+      uri: mongodb://localhost:30003/book-service-mongodb
   cloud:
     discovery:
       enabled: true

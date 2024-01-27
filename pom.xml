@@ -17,9 +17,9 @@
 
     <modules>
         <module>book-service</module>
-        <module>security-service</module>
+        <module>auth-server</module>
         <module>eureka-discovery-server</module>
-        <module>gateway-service</module>
+        <module>gateway-server</module>
     </modules>
 
     <properties>
