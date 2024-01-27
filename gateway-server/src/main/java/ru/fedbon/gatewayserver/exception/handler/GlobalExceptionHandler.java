@@ -23,7 +23,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({ApiException.class, InvalidCredentialsException.class})
     public ResponseEntity<Object> handleApiException(ApiException ex) {
-        return ResponseEntity.badRequest().body(buildErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED.value(), "UNAUTHORIZED"));
+        return ResponseEntity.badRequest().body(buildErrorResponse(ex.getMessage(),
+                HttpStatus.UNAUTHORIZED.value(), "UNAUTHORIZED"));
     }
 
 
@@ -31,7 +32,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleInternalServerError(Exception ex) {
         var errorMessage = (ex.getMessage() != null) ? ex.getMessage() : ex.getClass().getName();
-        return ResponseEntity.internalServerError().body(buildErrorResponse(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR.value(), "INTERNAL_SERVER_ERROR"));
+        return ResponseEntity.internalServerError().body(buildErrorResponse(errorMessage,
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), "INTERNAL_SERVER_ERROR"));
     }
 
     private Map<String, Object> buildErrorResponse(String message, int status, String errorCode) {
