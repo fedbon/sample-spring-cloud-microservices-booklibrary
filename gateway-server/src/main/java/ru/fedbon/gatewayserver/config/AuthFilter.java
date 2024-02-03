@@ -21,8 +21,6 @@ import java.util.function.Predicate;
 @Component
 public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> {
 
-    private static final String BEARER_PREFIX = "Bearer ";
-
     private final List<String> permittedEndpoints = List.of(
             "/api/v1/auth/signup",
             "/api/v1/auth/signin"
@@ -49,14 +47,14 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                 String token = extractToken(request);
                 return webClientBuilder.build()
                         .post()
-                        .uri("http://auth-server/api/v1/auth/validate?token=" + token)
+                        .uri("http://user-server/api/v1/auth/validate?token=" + token)
                         .retrieve()
                         .bodyToMono(UserValidationResponse.class)
                         .flatMap(userValidationResponse -> {
                             exchange.getRequest()
                                     .mutate()
                                     .header("X-auth-user-id", userValidationResponse.getId())
-                                    .header("X-auth-user-role", userValidationResponse.getRole());
+                                    .header("X-auth-username", userValidationResponse.getUsername());
                             return chain.filter(exchange);
                         });
             } catch (InvalidCredentialsException e) {

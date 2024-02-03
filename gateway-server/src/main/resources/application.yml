@@ -29,8 +29,20 @@ spring:
             - Path=/api/v1/books/**
           filters:
             - AuthFilter
-        - id: auth-server
-          uri: lb://auth-server
+        - id: author-service
+          uri: lb://author-service
+          predicates:
+            - Path=/api/v1/author/**
+          filters:
+            - AuthFilter
+        - id: comment-service
+          uri: lb://comment-service
+          predicates:
+            - Path=/api/v1/comments/**
+          filters:
+            - AuthFilter
+        - id: user-server
+          uri: lb://user-server
           predicates:
             - Path=/api/v1/auth/**
 

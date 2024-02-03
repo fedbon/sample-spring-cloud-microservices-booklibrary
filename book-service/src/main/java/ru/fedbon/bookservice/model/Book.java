@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 
 
 @Builder
@@ -30,6 +31,13 @@ public class Book {
     @DBRef
     private Genre genre;
 
-    @DBRef
-    private Author author;
+    private String authorId;
+
+    private String description;
+
+    private LocalDateTime createdAt;
+
+    private Integer positiveVotesCount;
+
+    private Integer negativeVotesCount;
 }

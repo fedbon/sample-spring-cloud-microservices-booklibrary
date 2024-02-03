@@ -7,17 +7,20 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0</version>
+        <version>3.2.2</version>
     </parent>
 
     <groupId>ru.fedbon</groupId>
-    <artifactId>sample-spring-cloud-microservices-bookstore</artifactId>
+    <artifactId>sample-spring-cloud-microservices-booklibrary</artifactId>
     <version>1.0</version>
     <packaging>pom</packaging>
 
     <modules>
         <module>book-service</module>
-        <module>auth-server</module>
+        <module>author-service</module>
+        <module>comment-service</module>
+        <module>vote-service</module>
+        <module>user-server</module>
         <module>eureka-discovery-server</module>
         <module>gateway-server</module>
     </modules>
@@ -25,28 +28,32 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <spring-shell-starter.version>3.1.4</spring-shell-starter.version>
-
         <spring-cloud.version>2023.0.0</spring-cloud.version>
         <spring-cloud-starter-netflix.version>4.1.0</spring-cloud-starter-netflix.version>
 
-        <h2.version>2.2.224</h2.version>
-        <mongock.version>4.3.8</mongock.version>
-        <flapdoodle.version>4.11.0</flapdoodle.version>
-        <jquery.version>3.7.1</jquery.version>
+        <mongock-spring.version>4.3.8</mongock-spring.version>
+        <flapdoodle.version>4.12.2</flapdoodle.version>
+        <flapdoodle.embed.mongo.spring30x.version>4.11.0</flapdoodle.embed.mongo.spring30x.version>
+
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+
+        <lombok.version>1.18.30</lombok.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+
+        <reactor-resilience4j.version>3.1.0</reactor-resilience4j.version>
 
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
 
-        <checkstyle-plugin.version>3.3.0</checkstyle-plugin.version>
-        <checkstyle.version>10.9.1</checkstyle.version>
+        <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
+        <checkstyle.version>10.13.0</checkstyle.version>
         <checkstyle.config.url>
             https://raw.githubusercontent.com/OtusTeam/Spring/master/checkstyle.xml
         </checkstyle.config.url>
 
-        <opencsv.version>5.8</opencsv.version>
-        <snakeyaml.version>2.0</snakeyaml.version>
+        <jjwt.version>0.12.4</jjwt.version>
+
     </properties>
 
 </project>

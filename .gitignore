@@ -1,6 +1,9 @@
 # Compiled class file
 *.class
 
+# Ignore private environment file
+http-client.private.env.json
+
 # Log file
 *.log
 

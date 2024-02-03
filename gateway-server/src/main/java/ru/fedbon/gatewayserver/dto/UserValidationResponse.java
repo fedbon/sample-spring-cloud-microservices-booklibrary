@@ -15,5 +15,5 @@ public class UserValidationResponse {
 
     private String id;
 
-    private String role;
+    private String username;
 }

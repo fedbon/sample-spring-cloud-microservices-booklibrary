@@ -1,0 +1,8 @@
+services:
+  mongo:
+    container_name: comment-service-mongodb
+    image: mongo:latest
+    ports:
+      - 30005:27017
+    restart: always
+    command: mongod --bind_ip_all

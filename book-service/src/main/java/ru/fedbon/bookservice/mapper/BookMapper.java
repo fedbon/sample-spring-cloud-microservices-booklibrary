@@ -1,38 +1,38 @@
 package ru.fedbon.bookservice.mapper;
 
-import org.springframework.stereotype.Component;
-import ru.fedbon.bookservice.dto.BookCreateDto;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.fedbon.bookservice.dto.BookDto;
-import ru.fedbon.bookservice.model.Author;
 import ru.fedbon.bookservice.model.Book;
 import ru.fedbon.bookservice.model.Genre;
 
 
-@Component
-public class BookMapper {
+@Mapper(componentModel = "spring")
+public interface BookMapper {
 
-    private BookMapper() {
+    @Mapping(target = "genre", expression = "java(mapGenre(book.getGenre()))")
+    @Mapping(target = "rating", expression = "java(calculateRating(book))")
+    BookDto map(Book book);
+
+    // Add mapping for List<CommentResponseDto>
+    @Mapping(target = "comments", ignore = true)
+    BookDto mapToBookDto(Book book);
+
+    default String mapGenre(Genre genre) {
+        return (genre != null) ? genre.getName() : null;
     }
 
-    public static Book mapDtoToNewBook(BookCreateDto bookCreateDto, Genre genre, Author author) {
+    default Double calculateRating(Book book) {
+        int totalVotes = book.getPositiveVotesCount() + book.getNegativeVotesCount();
 
-        var bookBuilder = Book.builder();
-        bookBuilder.title(bookCreateDto.getTitle());
-        bookBuilder.genre(genre);
-        bookBuilder.author(author);
+        if (totalVotes == 0) {
+            return 0.0;
+        }
 
-        return bookBuilder.build();
+        double positiveRatio = (double) book.getPositiveVotesCount() / totalVotes;
+        double rawRating = positiveRatio * 10.0;
+
+        return Math.round(rawRating * 10.0) / 10.0;
     }
-
-    public static BookDto mapBookToDto(Book book) {
-
-        var bookDto = new BookDto();
-        bookDto.setId(book.getId());
-        bookDto.setTitle(book.getTitle());
-        bookDto.setAuthor(book.getAuthor().getName());
-        bookDto.setGenre(book.getGenre().getName());
-
-        return bookDto;
-    }
-
 }

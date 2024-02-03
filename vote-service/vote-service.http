@@ -1,0 +1,10 @@
+GET http://localhost:9885/api/v1/votes/book/1
+Content-Type: application/json
+
+###
+GET http://localhost:9885/api/v1/votes/user/1
+Content-Type: application/json
+
+
+
+

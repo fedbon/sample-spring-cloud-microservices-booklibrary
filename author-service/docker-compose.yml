@@ -1,0 +1,8 @@
+services:
+  mongo:
+    container_name: author-service-mongodb
+    image: mongo:latest
+    ports:
+      - 30004:27017
+    restart: always
+    command: mongod --bind_ip_all

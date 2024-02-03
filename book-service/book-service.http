@@ -1,0 +1,23 @@
+GET http://localhost:8765/api/v1/books/1
+Content-Type: application/json
+
+###
+GET http://localhost:8765/api/v1/books
+Content-Type: application/json
+
+###
+GET http://localhost:8765/api/v1/books?genre=1
+Content-Type: application/json
+
+###
+GET http://localhost:8765/api/v1/books?genre=1&order=createdAt&desc=false
+Content-Type: application/json
+
+###
+GET http://localhost:8765/api/v1/books?genre=1&order=createdAt&desc=true
+Content-Type: application/json
+
+###
+GET http://localhost:8765/api/v1/genres
+Content-Type: application/json
+
