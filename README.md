@@ -66,23 +66,23 @@ To register a new user, send a POST request to `/api/v1/auth/signup` with the fo
 }
 ```
 - **Sing In**
-To log in with an existing user, send a POST request to /api/v1/auth/signin with the following JSON payload:
-- 
+To log in with an existing user, send a POST request to `/api/v1/auth/signin` with the following JSON payload:
+
 ```json
 {
   "username": "max_payne",
   "password": "12345"
 }
 ```
-- **Get My Account Information**: To retrieve the account information of the currently authenticated user, send a GET request to /api/v1/user/my with the appropriate authorization token in the header.
-- **Get User Information by ID**: To fetch information about a specific user by their ID, send a GET request to /api/v1/user/{user_id} with the appropriate authorization token in the header.
-- **Validate Token**: To validate an authentication token, send a POST request to /api/v1/auth/validate?token={auth_token}. Note that the {auth_token} placeholder should be replaced with the actual authentication token.
-- **Get Book by ID**: To retrieve information about a specific book by its ID, send a GET request to /api/v1/books/{book_id} with the appropriate authorization token in the header.
-- **Get All Books**: To fetch information about all books in the system, send a GET request to /api/v1/books with the appropriate authorization token in the header.
-- **Order Books by CreateAt Field**: To order books by the createdAt field in descending order, send a GET request to /api/v1/books?order=createdAt&desc=true with the appropriate authorization token in the header.
-- **Get All Books by Genre ID**: To retrieve information about all books belonging to a specific genre, send a GET request to /api/v1/books?genre={genre_id} with the appropriate authorization token in the header.
-- **Sort All Books Voted by User ID**: To sort all books voted by a specific user ID by the negative field, send a GET request to /api/v1/books?userId={user_id}&sort=negative with the appropriate authorization token in the header.
-- **Get All Comments by User ID**: To fetch all comments made by a specific user, send a GET request to /api/v1/comments/user/{user_id} with the appropriate authorization token in the header.
+- **Get My Account Information**: To retrieve the account information of the currently authenticated user, send a GET request to `/api/v1/user/my` with the appropriate authorization token in the header.
+- **Get User Information by ID**: To fetch information about a specific user by their ID, send a GET request to `/api/v1/user/{user_id}` with the appropriate authorization token in the header.
+- **Validate Token**: To validate an authentication token, send a POST request to `/api/v1/auth/validate?token={auth_token}`. Note that the `{auth_token}` placeholder should be replaced with the actual authentication token.
+- **Get Book by ID**: To retrieve information about a specific book by its ID, send a GET request to `/api/v1/books/{book_id}` with the appropriate authorization token in the header.
+- **Get All Books**: To fetch information about all books in the system, send a GET request to `/api/v1/books` with the appropriate authorization token in the header.
+- **Order Books by CreateAt Field**: To order books by the createdAt field in descending order, send a GET request to `/api/v1/books?order=createdAt&desc=true` with the appropriate authorization token in the header.
+- **Get All Books by Genre ID**: To retrieve information about all books belonging to a specific genre, send a GET request to `/api/v1/books?genre={genre_id}` with the appropriate authorization token in the header.
+- **Sort All Books Voted by User ID**: To sort all books voted by a specific user ID by the negative field, send a GET request to `/api/v1/books?userId={user_id}&sort=negative` with the appropriate authorization token in the header.
+- **Get All Comments by User ID**: To fetch all comments made by a specific user, send a GET request to `/api/v1/comments/user/{user_id}` with the appropriate authorization token in the header.
 Note: Ensure that you have placed the JWT token in the http-client.private.env.json file to enable the auth_token placeholder in the authorization header.
 
 ### Contributors
