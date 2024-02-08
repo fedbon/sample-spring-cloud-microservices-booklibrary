@@ -26,7 +26,7 @@ The architecture of the system follows the principles of microservices, where ea
 4. **Run Microservices**: Start each microservice individually, ensuring that they register themselves with the Eureka server.
 5. **Access Gateway Server**: Once all microservices are running, access the gateway server to interact with the system's functionalities.
 
-### Using the `booklibrary-microservices.http` file for requests
+### Using the booklibrary-microservices.http file for requests
 
 To test the program, you can use the `booklibrary-microservices.http` file, which contains a collection of HTTP requests. Follow these steps to utilize the file within IntelliJ IDEA Ultimate:
 
@@ -48,19 +48,19 @@ By following these steps, you can effectively use the `booklibrary-microservices
 
 ### Technologies Used
 
-- Spring Boot: For building microservices and handling core functionalities.
-- Spring Cloud: For implementing service discovery, routing, and other cloud-native features.
-- Reactive Programming: Utilizing Spring WebFlux and Reactor for handling asynchronous operations.
-- Netflix Eureka: For service registration and discovery.
-- Spring Security: For implementing user authentication and authorization.
-- WebClient: For making HTTP requests to other microservices.
-- MongoDB: As the database for storing and managing data across microservices.
-- JWT (JSON Web Tokens): For securely transmitting information between parties as a JSON object.
-- Resilience4j: For implementing fault tolerance and resilience in microservices.
-- Kafka: For building real-time streaming data pipelines and applications.
-- Docker: For containerizing microservices.
-- Maven: For project management and dependency management.
-- MapStruct: For simplifying the process of mapping objects between layers.
+- **Spring Boot**
+- **Spring Cloud**
+- **Spring WebFlux**
+- **Netflix Eureka**
+- **Spring Security**
+- **JWT**
+- **WebClient**
+- **MongoDB**
+- **Resilience4j**
+- **Kafka**
+- **Docker**
+- **Maven**
+- **MapStruct**
 
 ### Contributors
 
