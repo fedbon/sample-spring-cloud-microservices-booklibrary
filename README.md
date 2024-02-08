@@ -60,11 +60,11 @@ To test the program, you can use the `booklibrary-microservices.http` file, whic
 
 By following these steps, you can effectively use the `booklibrary-microservices.http` file to test the program's functionalities directly within IntelliJ IDEA Ultimate or any other HTTP client that supports cURL or HTTP request importing.
 
-Note: Ensure that you have placed the JWT token in the http-client.private.env.json file to enable the auth_token placeholder in the authorization header.
+**Note**: Ensure that you have placed the JWT token in the http-client.private.env.json file to enable the auth_token placeholder in the authorization header.
 
 ### Contributors
 
-- Fedor Bondarev
+**Fedor Bondarev**
 
 ### License
 
