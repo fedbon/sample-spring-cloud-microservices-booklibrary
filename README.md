@@ -21,7 +21,7 @@ The architecture of the system follows the principles of microservices, where ea
 ### Setup Instructions
 
 1. **Clone Repository**: Clone this repository to your local machine.
-2. **Build Microservices**: Build each microservice using Maven (`by default`) or Gradle. Ensure that all dependencies are resolved.
+2. **Build Microservices**: Build each microservice using Maven    (`by default`) or Gradle. Ensure that all dependencies are resolved.
 3. **Run Eureka Server**: Start the Eureka server by running the `EurekaDiscoveryServerApplication` class.
 4. **Run Microservices**: Start each microservice individually, ensuring that they register themselves with the Eureka server.
 5. **Access Gateway Server**: Once all microservices are running, access the gateway server to interact with the system's functionalities.
