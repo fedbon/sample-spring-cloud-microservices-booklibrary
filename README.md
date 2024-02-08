@@ -6,20 +6,13 @@ This repository contains a sample implementation of a book library system built 
 
 ### Features
 
-- **Book Management**: Allows users to perform a wide range of operations on books, including browsing, searching, adding, updating, and deleting books from the system. Users can view detailed information about each book, including its title, author, genre, publication date, and ratings. Additionally, users can interact with comments associated with each book, posting their own comments and viewing comments made by other users.
-
-- **Author Management**: Provides comprehensive functionalities related to authors, allowing users to explore author profiles, including biographical information, list of books authored, and statistics such as the number of votes received from users. Users can also search for authors based on various criteria and interact with author-related data seamlessly.
-
-- **Comment Management**: Manages user comments on books efficiently, offering features such as fetching comments by book ID or user ID, counting comments by user ID, and sorting comments based on criteria like popularity or recency. Users can post comments, reply to existing comments, and engage in discussions within the community.
-
-- **User Authentication**: Implements a robust user authentication system to ensure secure access to the system's functionalities. Supports user registration with validation, authentication via username and password, and token-based authentication using JWT (JSON Web Tokens) for stateless and secure communication between client and server.
-
-- **Genre Management**: Facilitates easy exploration and discovery of books by enabling users to browse and retrieve information about book genres available in the system. Users can explore different genres, view popular books within each genre, and discover new books based on their interests.
-
-- **Gateway Server**: Serves as the central entry point to the system, routing incoming requests from clients to the appropriate microservices. It provides a unified interface for clients to interact with the various functionalities offered by the system, abstracting away the complexities of the underlying microservices architecture.
-
-- **Service Discovery**: Leverages Eureka server for service registration and discovery, enabling seamless communication and collaboration between microservices. Eureka allows microservices to dynamically register themselves with the service registry upon startup and discover other services based on their logical names, ensuring robustness and scalability in distributed systems.
-
+- **Book Management**: Allows users to perform CRUD operations on books, view detailed information such as title, author, genre, publication date, and ratings, and interact with comments.
+- **Author Management**: Provides author profiles, including biographical information, authored books, and statistics. Users can search for authors and explore their data.
+- **Comment Management**: Manages user comments on books, including fetching by book or user ID, counting by user ID, and sorting by popularity or recency. Users can post, reply, and engage in discussions.
+- **User Authentication**: Implements secure user registration, authentication via username/password, and JWT-based token authentication.
+- **Genre Management**: Facilitates book exploration by browsing genres, viewing popular books, and discovering new ones.
+- **Gateway Server**: Central entry point routing requests to microservices, providing a unified interface for clients.
+- **Service Discovery**: Uses Eureka server for service registration and discovery, ensuring seamless communication between microservices.
 
 ### Architecture
 
@@ -28,13 +21,9 @@ The architecture of the system follows the principles of microservices, where ea
 ### Setup Instructions
 
 1. **Clone Repository**: Clone this repository to your local machine.
-
-2. **Build Microservices**: Build each microservice using Maven or Gradle. Ensure that all dependencies are resolved.
-
+2. **Build Microservices**: Build each microservice using Maven `by default` or Gradle. Ensure that all dependencies are resolved.
 3. **Run Eureka Server**: Start the Eureka server by running the `EurekaDiscoveryServerApplication` class.
-
 4. **Run Microservices**: Start each microservice individually, ensuring that they register themselves with the Eureka server.
-
 5. **Access Gateway Server**: Once all microservices are running, access the gateway server to interact with the system's functionalities.
 
 ## Technologies Used
@@ -54,8 +43,7 @@ The architecture of the system follows the principles of microservices, where ea
 
 ### Registration
 
-- **Sing Up**
-To register a new user, send a POST request to `/api/v1/auth/signup` with the following JSON payload:
+- **Sing Up**: To register a new user, send a POST request to `/api/v1/auth/signup` with the following JSON payload:
 
 ```json
 {
@@ -65,8 +53,7 @@ To register a new user, send a POST request to `/api/v1/auth/signup` with the fo
   "last_name": "Payne"
 }
 ```
-- **Sing In**
-To log in with an existing user, send a POST request to `/api/v1/auth/signin` with the following JSON payload:
+- **Sing In**: To log in with an existing user, send a POST request to `/api/v1/auth/signin` with the following JSON payload:
 
 ```json
 {
