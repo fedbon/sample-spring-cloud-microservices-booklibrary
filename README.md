@@ -68,4 +68,4 @@ By following these steps, you can effectively use the `booklibrary-microservices
 
 ### License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE).
