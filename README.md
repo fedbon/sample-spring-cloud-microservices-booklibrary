@@ -42,9 +42,9 @@ To test the program, you can use the `booklibrary-microservices.http` file, whic
 
 6. **Monitor Console Output**: Keep an eye on the console output within IntelliJ IDEA to view logs and information generated during the execution of HTTP requests.
 
-By following these steps, you can effectively use the `booklibrary-microservices.http` file to test the program's functionalities directly within IntelliJ IDEA Ultimate or any other HTTP client that supports cURL or HTTP request importing.
-
 **Note**: *Ensure that you have placed the JWT token in the `http-client.private.env.json` file to enable the `auth_token` placeholder in the authorization header.*
+
+By following these steps, you can effectively use the `booklibrary-microservices.http` file to test the program's functionalities directly within IntelliJ IDEA Ultimate or any other HTTP client that supports cURL or HTTP request importing.
 
 ## Technologies Used
 
@@ -54,18 +54,12 @@ By following these steps, you can effectively use the `booklibrary-microservices
 - ***Netflix Eureka***
 - ***Spring Security***
 - ***JWT***
-- ***WebClient***
 - ***MongoDB***
 - ***Resilience4j***
 - ***Kafka***
 - ***Docker***
-- ***Maven***
 - ***MapStruct***
 
 ## Contributors
 
 - Fedor Bondarev
-
-### License
-
-This project is licensed under the **[MIT License](LICENSE)**.
