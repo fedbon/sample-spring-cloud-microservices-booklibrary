@@ -1,10 +1,10 @@
-## Sample Spring Cloud Microservices Book Library
+# Book Library
 
-### Overview
+## Overview
 
 This repository contains a sample implementation of a book library system built using Spring Cloud microservices architecture. The project is divided into several microservices, each responsible for specific functionalities such as managing books, authors, comments, user authentication, and more.
 
-### Features
+## Features
 
 - **Book Management**: Allows users to perform CRUD operations on books, view detailed information such as title, author, genre, publication date, and ratings, and interact with comments.
 - **Author Management**: Provides author profiles, including biographical information, authored books, and statistics. Users can search for authors and explore their data.
@@ -14,11 +14,11 @@ This repository contains a sample implementation of a book library system built 
 - **Gateway Server**: Central entry point routing requests to microservices, providing a unified interface for clients.
 - **Service Discovery**: Uses Eureka server for service registration and discovery, ensuring seamless communication between microservices.
 
-### Architecture
+## Architecture
 
 The architecture of the system follows the principles of microservices, where each microservice is designed to be independently deployable and scalable. The system employs reactive programming with Spring WebFlux to handle asynchronous and non-blocking I/O operations efficiently.
 
-### Setup Instructions
+## Setup Instructions
 
 1. **Clone Repository**: Clone this repository to your local machine.
 2. **Build Microservices**: Build each microservice using Maven (by default) or Gradle. Ensure that all dependencies are resolved.
@@ -46,7 +46,7 @@ By following these steps, you can effectively use the `booklibrary-microservices
 
 **Note**: *Ensure that you have placed the JWT token in the `http-client.private.env.json` file to enable the `auth_token` placeholder in the authorization header.*
 
-### Technologies Used
+## Technologies Used
 
 - ***Spring Boot***
 - ***Spring Cloud***
@@ -62,7 +62,7 @@ By following these steps, you can effectively use the `booklibrary-microservices
 - ***Maven***
 - ***MapStruct***
 
-### Contributors
+## Contributors
 
 - Fedor Bondarev
 
