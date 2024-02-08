@@ -6,15 +6,16 @@ import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.decorator.impl
 import com.mongodb.client.MongoDatabase;
 import ru.fedbon.bookservice.model.Book;
 import ru.fedbon.bookservice.model.Genre;
+import ru.fedbon.bookservice.model.VoteByUser;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 
 @ChangeLog(order = "001")
 public class DatabaseChangelog {
-
     private final Random random = new Random();
 
     private final Genre genre1 = new Genre("1", "Роман");
@@ -37,8 +38,7 @@ public class DatabaseChangelog {
                     "и затрагивает темы любви, войны, политики и человеческих отношений. " +
                     "Это произведение является важной частью мировой литературной культуры.",
             LocalDateTime.now().minusMinutes(5L),
-            generateRandomCount(),
-            generateRandomCount()
+            generateVotesList(2)
     );
 
     private final Book book2 = new Book(
@@ -50,8 +50,7 @@ public class DatabaseChangelog {
                     "Главный герой, Родион Раскольников, погружается в мир внутренней борьбы и пытается " +
                     "найти смысл своего существования в противоречиях морали и человеческой природы.",
             LocalDateTime.now().minusMinutes(10L),
-            generateRandomCount(),
-            generateRandomCount()
+            generateVotesList(21)
     );
 
     private final Book book3 = new Book(
@@ -64,8 +63,7 @@ public class DatabaseChangelog {
                     "где главный герой, психолог Крис Кельвин, сталкивается " +
                     "с загадочными явлениями и своими внутренними страхами.",
             LocalDateTime.now().minusMinutes(15L),
-            generateRandomCount(),
-            generateRandomCount()
+            generateVotesList(12)
     );
 
     private final Book book4 = new Book(
@@ -77,8 +75,7 @@ public class DatabaseChangelog {
                     "Сюжет вращается вокруг визита дьявола в Москву и его взаимодействия " +
                     "с различными обитателями города, а также мастером и его возлюбленной Маргаритой.",
             LocalDateTime.now().minusMinutes(20L),
-            generateRandomCount(),
-            generateRandomCount()
+            generateVotesList(10)
     );
 
     private final Book book5 = new Book(
@@ -90,8 +87,7 @@ public class DatabaseChangelog {
                     "Главный герой, Артем, отправляется в опасное путешествие по подземному миру, " +
                     "сталкиваясь с мутантами и другими опасностями.",
             LocalDateTime.now().minusMinutes(25L),
-            generateRandomCount(),
-            generateRandomCount()
+            generateVotesList(1)
     );
 
     private final Book book6 = new Book(
@@ -103,8 +99,7 @@ public class DatabaseChangelog {
                     "по неизвестной причине. Книга затрагивает темы абсурда, человеческой бюрократии " +
                     "и бессмысленности человеческого существования.",
             LocalDateTime.now().minusMinutes(30L),
-            generateRandomCount(),
-            generateRandomCount()
+            generateVotesList(3)
     );
 
     private final Book book7 = new Book(
@@ -115,8 +110,7 @@ public class DatabaseChangelog {
                     "принца Мышкина в Петербург после лечения за границей. Он является «идиотом» " +
                     "в смысле отсутствия злобы и желания власти, что приводит к множеству недоразумений и трагедий.",
             LocalDateTime.now().minusMinutes(35L),
-            generateRandomCount(),
-            generateRandomCount()
+            generateVotesList(5)
     );
 
     private final Book book8 = new Book(
@@ -127,12 +121,19 @@ public class DatabaseChangelog {
                     "который исследует моральные и философские вопросы через историю трех братьев. " +
                     "Роман затрагивает темы религии, морали, греха и смысла жизни.",
             LocalDateTime.now().minusMinutes(40L),
-            generateRandomCount(),
-            generateRandomCount()
+            generateVotesList(2)
     );
 
-    private int generateRandomCount() {
-        return random.nextInt(101);
+    private List<VoteByUser> generateVotesList(int count) {
+        List<VoteByUser> votesList = new ArrayList<>();
+
+        for (int i = 1; i <= count; i++) {
+            boolean isPositive = random.nextBoolean();
+            var voteByUser = new VoteByUser(String.valueOf(i), String.valueOf(i), isPositive);
+            votesList.add(voteByUser);
+        }
+
+        return votesList;
     }
 
     @ChangeSet(order = "000", id = "dropDB", author = "fedbon", runAlways = true)

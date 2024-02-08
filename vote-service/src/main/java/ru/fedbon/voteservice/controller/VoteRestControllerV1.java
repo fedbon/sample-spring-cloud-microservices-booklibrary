@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import ru.fedbon.voteservice.dto.VoteDto;
 import ru.fedbon.voteservice.exception.NotFoundException;
 import ru.fedbon.voteservice.model.Vote;
 import ru.fedbon.voteservice.repository.VoteRepository;
-import ru.fedbon.voteservice.dto.VoteDto;
 import ru.fedbon.voteservice.mapper.VoteMapper;
 
 

@@ -9,17 +9,28 @@ import lombok.Setter;
 import lombok.ToString;
 
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class AuthorResponseDto {
+public class BookWithAuthorInfoDto {
 
     @NotBlank
     private String id;
 
     @NotBlank
-    private String name;
+    private String title;
+
+    @NotBlank
+    private String authorName;
+
+    @NotBlank
+    private String description;
+
+    private String createdAt;
+
+    private Double rating;
 }
+

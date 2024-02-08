@@ -3,7 +3,6 @@ package ru.fedbon.bookservice.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +12,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.fedbon.bookservice.dto.AuthorResponseDto;
-import ru.fedbon.bookservice.dto.BookDto;
+import ru.fedbon.bookservice.dto.BookWithAuthorInfoAndCommentsDto;
+import ru.fedbon.bookservice.dto.BookWithAuthorInfoDto;
 import ru.fedbon.bookservice.dto.CommentResponseDto;
 import ru.fedbon.bookservice.exception.NotFoundException;
 import ru.fedbon.bookservice.mapper.BookMapper;
@@ -35,70 +35,94 @@ public class BookRestControllerV1 {
 
     private final WebClient.Builder webClientBuilder;
 
+    @GetMapping("/user/{id}/count")
+    public Mono<Long> countBooksVotedByUserId(@PathVariable(name = "id") String userId) {
+        return bookRepository.findAll()
+                .filter(book -> book.getVoteByUserList().stream()
+                        .anyMatch(vote -> vote.getUserId().equals(userId)))
+                .count()
+                .doOnNext(count -> log.info("Counted books voted by user ID {}: {}", userId, count))
+                .switchIfEmpty(Mono.error(new NotFoundException("No books voted by user")));
+    }
+
     @GetMapping
-    public Flux<BookDto> handleGetAll(
-            @RequestParam(name = "order", defaultValue = "relevancy") String order,
+    public Flux<BookWithAuthorInfoDto> handleGetAll(
+            @RequestParam(name = "order", defaultValue = "rating") String order,
             @RequestParam(name = "desc", defaultValue = "true") boolean desc) {
-
-        var sort = getSort(order, desc);
-
-        return bookRepository.findAll(sort)
-                .flatMap(this::enrichBookWithAuthorInfo);
+        return bookRepository.findAll()
+                .flatMap(this::enrichBookWithAuthorInfo)
+                .sort((bookDto1, bookDto2) -> compareBooks(bookDto1, bookDto2, order, desc))
+                .doOnNext(bookDto -> log.info("Returning book: {}", bookDto));
     }
 
     @GetMapping(params = "genre")
-    public Flux<BookDto> handleGetAllByGenreId(
+    public Flux<BookWithAuthorInfoDto> handleGetAllByGenreId(
             @RequestParam(name = "genre") String genreId,
-            @RequestParam(name = "order", defaultValue = "relevancy") String order,
+            @RequestParam(name = "order", defaultValue = "rating") String order,
             @RequestParam(name = "desc", defaultValue = "true") boolean desc) {
-
-        var sort = getSort(order, desc);
-
-        return bookRepository.findAllByGenreId(genreId, sort)
-                .flatMap(this::enrichBookWithAuthorInfo);
+        return bookRepository.findAllByGenreId(genreId)
+                .flatMap(this::enrichBookWithAuthorInfo)
+                .sort((bookDto1, bookDto2) -> compareBooks(bookDto1, bookDto2, order, desc))
+                .doOnNext(bookDto -> log.info("Returning book: {}", bookDto));
     }
 
     @GetMapping(value = "/{id}")
-    public Mono<BookDto> handleGetById(@PathVariable(value = "id") String id) {
+    public Mono<BookWithAuthorInfoAndCommentsDto> handleGetById(@PathVariable(value = "id") String id) {
         return bookRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException("Book not found")))
-                .flatMap(book -> enrichBookWithAuthorInfoAndComments(bookMapper.map(book)));
+                .flatMap(book -> enrichBookWithAuthorInfoAndComments(bookMapper
+                        .mapToBookWithAuthorsAndCommentsDto(book)))
+                .doOnNext(bookDto -> log.info("Returning book: {}", bookDto));
     }
 
     @GetMapping(params = "author")
-    public Flux<BookDto> handleGetAllByAuthorId(@RequestParam(value = "author") String authorId,
-                                                @RequestParam(name = "order", defaultValue = "rating") String order,
-                                                @RequestParam(name = "desc", defaultValue = "true") boolean desc) {
-
-        var sort = getSort(order, desc);
-
-        return bookRepository.findAllByAuthorId(authorId, sort)
+    public Flux<BookWithAuthorInfoDto> handleGetAllByAuthorId(
+            @RequestParam(value = "author") String authorId,
+            @RequestParam(name = "order", defaultValue = "rating") String order,
+            @RequestParam(name = "desc", defaultValue = "true") boolean desc) {
+        return bookRepository.findAllByAuthorId(authorId)
                 .flatMap(this::enrichBookWithAuthorInfo)
-                .doOnNext(bookDto -> log.info("Books retrieved successfully for Author ID: {}", authorId))
-                .doOnError(error -> log.error("Error occurred while retrieving books by Author ID {}: {}",
-                        authorId, error.getMessage(), error));
+                .sort((bookDto1, bookDto2) -> compareBooks(bookDto1, bookDto2, order, desc))
+                .doOnNext(bookDto -> log.info("Books retrieved successfully for Author ID: {}", authorId));
     }
 
-    private Mono<BookDto> enrichBookWithAuthorInfo(Book book) {
+    private Mono<BookWithAuthorInfoDto> enrichBookWithAuthorInfo(Book book) {
         return fetchAuthorInfo(book.getAuthorId())
                 .map(authorDto -> {
-                    var bookDto = bookMapper.map(book);
-                    bookDto.setAuthorName(authorDto.getName());
-                    return bookDto;
-                });
+                    var bookWithAuthorsDto = bookMapper.mapToBookWithAuthorsDto(book);
+                    bookWithAuthorsDto.setAuthorName(authorDto.getName());
+                    return bookWithAuthorsDto;
+                })
+                .doOnNext(bookDto -> log.info("Enriched book with author info: {}", bookDto));
     }
 
-    private Mono<BookDto> enrichBookWithAuthorInfoAndComments(BookDto bookDto) {
-        return fetchAuthorInfo(bookDto.getAuthorName())
+    @GetMapping(params = "user")
+    public Flux<BookWithAuthorInfoAndCommentsDto> handleGetAllByUserId(
+            @RequestParam(name = "user") String userId,
+            @RequestParam(name = "sort", defaultValue = "positive") String sort) {
+        return bookRepository.findAll()
+                .filter(book -> book.getVoteByUserList().stream()
+                        .anyMatch(vote -> vote.getUserId().equals(userId)))
+                .flatMap(book -> enrichBookWithAuthorInfoAndComments(bookMapper
+                .mapToBookWithAuthorsAndCommentsDto(book)))
+                .sort((bookDto1, bookDto2) -> compareBooksByVote(bookDto1, bookDto2, sort))
+                .doOnNext(bookDto -> log.info("Returning book: {}", bookDto));
+    }
+
+    private Mono<BookWithAuthorInfoAndCommentsDto> enrichBookWithAuthorInfoAndComments(
+            BookWithAuthorInfoAndCommentsDto bookDto) {
+        return fetchAuthorInfo(bookDto.getAuthorId())
                 .flatMap(authorDto -> {
                     var commentsFlux = fetchComments(bookDto.getId());
                     return commentsFlux.collectList()
                             .map(comments -> {
                                 bookDto.setAuthorName(authorDto.getName());
                                 bookDto.setComments(comments);
+                                bookDto.setCommentsCount(comments.size());
                                 return bookDto;
                             });
-                });
+                })
+                .doOnNext(dto -> log.info("Enriched book with author info and comments: {}", dto));
     }
 
     private Mono<AuthorResponseDto> fetchAuthorInfo(String authorId) {
@@ -109,7 +133,7 @@ public class BookRestControllerV1 {
                 .bodyToMono(AuthorResponseDto.class)
                 .transform(it -> cbFactory.create("author-service")
                         .run(it, throwable -> Mono.just(new AuthorResponseDto(null,
-                                "Author information not available", null))))
+                                "Author information not available"))))
                 .doOnNext(authorDto -> log.info("Received author information: {}", authorDto));
     }
 
@@ -121,18 +145,46 @@ public class BookRestControllerV1 {
                 .bodyToFlux(CommentResponseDto.class)
                 .transform(it -> cbFactory.create("comment-service")
                         .run(it, throwable -> Flux.just(new CommentResponseDto(null,
-                                "Comments not available", null, null,
+                                "Comments information not available", null, null,
                                 null, null, null))))
                 .doOnNext(commentDto -> log.info("Received comment: {}", commentDto));
     }
 
-    private Sort getSort(String order, boolean desc) {
-        if ("relevancy".equalsIgnoreCase(order)) {
-            return desc ? Sort.by(Sort.Direction.DESC, "rating")
-                    : Sort.by(Sort.Direction.ASC, "rating");
+    private int compareBooks(BookWithAuthorInfoDto bookDto1, BookWithAuthorInfoDto bookDto2,
+                             String order, boolean desc) {
+        if ("createdAt".equalsIgnoreCase(order)) {
+            return compareByCreatedAt(bookDto1, bookDto2, desc);
         } else {
-            return desc ? Sort.by(Sort.Direction.DESC, "createdAt")
-                    : Sort.by(Sort.Direction.ASC, "createdAt");
+            return compareByRating(bookDto1, bookDto2, desc);
+        }
+    }
+
+    private int compareBooksByVote(BookWithAuthorInfoAndCommentsDto bookDto1,
+                                   BookWithAuthorInfoAndCommentsDto bookDto2, String sort) {
+        if ("positive".equalsIgnoreCase(sort)) {
+            return Integer.compare(bookDto2.getPositiveVotesCount(), bookDto1.getPositiveVotesCount());
+        } else if ("negative".equalsIgnoreCase(sort)) {
+            return Integer.compare(bookDto2.getNegativeVotesCount(), bookDto1.getNegativeVotesCount());
+        } else {
+            return 0;
+        }
+    }
+
+    private int compareByCreatedAt(BookWithAuthorInfoDto bookDto1,
+                                   BookWithAuthorInfoDto bookDto2, boolean desc) {
+        if (desc) {
+            return bookDto2.getCreatedAt().compareTo(bookDto1.getCreatedAt());
+        } else {
+            return bookDto1.getCreatedAt().compareTo(bookDto2.getCreatedAt());
+        }
+    }
+
+    private int compareByRating(BookWithAuthorInfoDto bookDto1,
+                                BookWithAuthorInfoDto bookDto2, boolean desc) {
+        if (desc) {
+            return Double.compare(bookDto2.getRating(), bookDto1.getRating());
+        } else {
+            return Double.compare(bookDto1.getRating(), bookDto2.getRating());
         }
     }
 }

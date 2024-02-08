@@ -1,25 +1,18 @@
-package ru.fedbon.bookservice.dto;
+package ru.fedbon.authorservice.model;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString
-public class GenreDto {
+public class VoteByUser {
 
     @NotBlank
-    private String id;
-
-    @NotBlank
-    private String name;
+    private String userId;
 }

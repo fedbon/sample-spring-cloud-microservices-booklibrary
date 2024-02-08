@@ -1,4 +1,4 @@
-package ru.fedbon.bookservice.dto;
+package ru.fedbon.commentservice.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -9,17 +9,21 @@ import lombok.Setter;
 import lombok.ToString;
 
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class AuthorResponseDto {
+public class BookResponseDto {
 
     @NotBlank
     private String id;
 
     @NotBlank
-    private String name;
+    private String title;
+
+    @NotBlank
+    private String authorName;
 }
+

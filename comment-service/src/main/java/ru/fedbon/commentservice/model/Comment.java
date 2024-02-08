@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Builder
@@ -35,7 +36,5 @@ public class Comment {
 
     private LocalDateTime createdAt;
 
-    private Integer positiveVotesCount;
-
-    private Integer negativeVotesCount;
+    private List<VoteByUser> voteByUserList;
 }

@@ -10,6 +10,8 @@ spring:
       enabled: true
   application:
     name: comment-service
+  profiles:
+    active: resilience4j
 
 mongock:
   runner-type: "InitializingBean"

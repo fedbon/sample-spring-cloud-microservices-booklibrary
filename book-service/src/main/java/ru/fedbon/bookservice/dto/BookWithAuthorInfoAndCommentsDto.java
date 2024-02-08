@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,21 +17,36 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
-public class CommentResponseDto {
+public class BookWithAuthorInfoAndCommentsDto {
 
     @NotBlank
     private String id;
 
     @NotBlank
-    private String text;
+    private String title;
 
-    private String userId;
+    @NotBlank
+    private String authorName;
 
-    private String username;
+    @NotBlank
+    private String authorId;
 
-    private String timeAgo;
+    @NotBlank
+    private String description;
+
+    private List<CommentResponseDto> comments;
 
     private Integer positiveVotesCount;
 
     private Integer negativeVotesCount;
+
+    private Integer commentsCount;
+
+    @NotBlank
+    private String genre;
+
+    private String createdAt;
+
+    private Double rating;
 }
+

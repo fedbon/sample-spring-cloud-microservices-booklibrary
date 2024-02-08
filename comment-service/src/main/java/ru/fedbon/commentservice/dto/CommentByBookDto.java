@@ -1,4 +1,4 @@
-package ru.fedbon.bookservice.dto;
+package ru.fedbon.commentservice.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
-public class CommentResponseDto {
+public class CommentByBookDto {
 
     @NotBlank
     private String id;
@@ -23,9 +23,20 @@ public class CommentResponseDto {
     @NotBlank
     private String text;
 
+    @NotBlank
     private String userId;
 
+    @NotBlank
     private String username;
+
+    @NotBlank
+    private String bookId;
+
+    @NotBlank
+    private String bookName;
+
+    @NotBlank
+    private String authorName;
 
     private String timeAgo;
 

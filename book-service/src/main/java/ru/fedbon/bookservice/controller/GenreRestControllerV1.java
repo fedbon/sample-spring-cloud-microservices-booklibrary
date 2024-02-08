@@ -3,9 +3,11 @@ package ru.fedbon.bookservice.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import ru.fedbon.bookservice.dto.GenreDto;
 import ru.fedbon.bookservice.mapper.GenreMapper;
@@ -26,6 +28,9 @@ public class GenreRestControllerV1 {
         return genreRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))
                 .map(genreMapper::map)
                 .doOnNext(genreDto -> log.info("Genre retrieved successfully. ID: {}", genreDto.getId()))
+                .onErrorResume(error ->
+                        Flux.error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                error.getMessage(), error)))
                 .doOnError(error -> log.error("Error occurred while retrieving genres: {}", error.getMessage(), error));
     }
 }

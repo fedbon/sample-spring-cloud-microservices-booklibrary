@@ -1,28 +1,29 @@
 package ru.fedbon.userserver.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import lombok.Setter;
+import lombok.ToString;
+
 
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class UserDto {
 
+    @NotBlank
     private String username;
 
-    private Flux<BookResponseDto> userLibraryDto;
+    @NotBlank
+    private Integer commentsCount;
 
-    private Mono<ReviewResponseDto> review;
-
-    private int reviewsCount;
-
-    private int booksReadCount;
-
-    private int booksLikedCount;
-
-    private int booksDislikedCount;
+    @NotBlank
+    private Integer booksCount;
 }

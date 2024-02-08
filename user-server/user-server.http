@@ -2,10 +2,10 @@ POST http://localhost:8083/api/v1/auth/signup
 Content-Type: application/json
 
 {
-  "username": "jack_bore",
+  "username": "max_payne",
   "password": "123",
-  "first_name": "Jack",
-  "last_name": "Bore"
+  "first_name": "Max",
+  "last_name": "Payne"
 }
 
 ###
@@ -13,12 +13,12 @@ POST http://localhost:8083/api/v1/auth/signin
 Content-Type: application/json
 
 {
-  "username": "jack_bore",
+  "username": "max_payne",
   "password": "123"
 }
 
 ###
-GET http://localhost:8083/api/v1/auth/get-user
+GET http://localhost:8083/api/v1/user/65c50079af2cfe222ee73be2
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 

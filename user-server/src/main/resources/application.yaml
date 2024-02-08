@@ -10,6 +10,8 @@ spring:
       uri: mongodb://localhost:30002/user-server-mongodb
   application:
     name: user-server
+  profiles:
+    active: resilience4j
 
 mongock:
   change-logs-scan-package: false

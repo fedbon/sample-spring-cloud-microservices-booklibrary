@@ -1,7 +1,6 @@
-GET http://localhost:9877/api/v1/reviews
+GET http://localhost:9876/api/v1/author/6
 Content-Type: application/json
 
-
-
-
-
+###
+GET http://localhost:9876/api/v1/author/user/14
+Content-Type: application/json

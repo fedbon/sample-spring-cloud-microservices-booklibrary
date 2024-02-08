@@ -19,19 +19,10 @@ public class VoteDto {
     private String id;
 
     @NotBlank
-    private String text;
+    private String userId;
 
     @NotBlank
-    private String bookTitle;
-
-    @NotBlank
-    private String bookAuthorName;
-
-    private String timeAgo;
-
-    private int likeCount;
-
-    private int dislikeCount;
+    private String voteType;
 
     @Override
     public boolean equals(Object o) {
@@ -41,19 +32,14 @@ public class VoteDto {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        VoteDto voteDto = (VoteDto) o;
+        var voteDto = (VoteDto) o;
         return Objects.equals(id, voteDto.id) &&
-                Objects.equals(text, voteDto.text) &&
-                Objects.equals(bookTitle, voteDto.bookTitle) &&
-                Objects.equals(bookAuthorName, voteDto.bookAuthorName) &&
-                Objects.equals(timeAgo, voteDto.timeAgo) &&
-                likeCount == voteDto.likeCount &&
-                dislikeCount == voteDto.dislikeCount;
+                Objects.equals(userId, voteDto.userId) &&
+                Objects.equals(voteType, voteDto.voteType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, text, bookTitle, bookAuthorName,
-                timeAgo, likeCount, dislikeCount);
+        return Objects.hash(id, userId, voteType);
     }
 }

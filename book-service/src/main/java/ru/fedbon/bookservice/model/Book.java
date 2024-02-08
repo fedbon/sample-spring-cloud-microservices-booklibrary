@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Builder
@@ -37,7 +38,5 @@ public class Book {
 
     private LocalDateTime createdAt;
 
-    private Integer positiveVotesCount;
-
-    private Integer negativeVotesCount;
+    private List<VoteByUser> voteByUserList;
 }

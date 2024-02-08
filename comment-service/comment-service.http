@@ -1,8 +1,8 @@
-GET http://localhost:9877/api/v1/reviews/book/1
+GET http://localhost:9877/api/v1/comments/book/1
 Content-Type: application/json
 
 ###
-GET http://localhost:9877/api/v1/reviews/user/1
+GET http://localhost:9877/api/v1/comments/user/1
 Content-Type: application/json
 
 
