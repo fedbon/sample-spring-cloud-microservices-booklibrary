@@ -6,19 +6,22 @@ This repository contains a sample implementation of a book library system built 
 
 ### Features
 
-- **Book Management**: Allows users to browse, search, and retrieve information about books stored in the system. Users can also view comments and ratings associated with each book.
+### Features
 
-- **Author Management**: Provides functionalities related to authors, including retrieving author information and counting the number of users who have voted for a specific author.
+- **Book Management**: Allows users to perform a wide range of operations on books, including browsing, searching, adding, updating, and deleting books from the system. Users can view detailed information about each book, including its title, author, genre, publication date, and ratings. Additionally, users can interact with comments associated with each book, posting their own comments and viewing comments made by other users.
 
-- **Comment Management**: Manages user comments on books, including fetching comments by book ID, user ID, and counting comments by user ID.
+- **Author Management**: Provides comprehensive functionalities related to authors, allowing users to explore author profiles, including biographical information, list of books authored, and statistics such as the number of votes received from users. Users can also search for authors based on various criteria and interact with author-related data seamlessly.
 
-- **User Authentication**: Supports user registration, authentication, and token validation for secure access to the system's functionalities.
+- **Comment Management**: Manages user comments on books efficiently, offering features such as fetching comments by book ID or user ID, counting comments by user ID, and sorting comments based on criteria like popularity or recency. Users can post comments, reply to existing comments, and engage in discussions within the community.
 
-- **Genre Management**: Enables users to browse and retrieve information about book genres available in the system.
+- **User Authentication**: Implements a robust user authentication system to ensure secure access to the system's functionalities. Supports user registration with validation, authentication via username and password, and token-based authentication using JWT (JSON Web Tokens) for stateless and secure communication between client and server.
 
-- **Gateway Server**: Acts as an entry point to the system, handling requests from clients and routing them to the appropriate microservices.
+- **Genre Management**: Facilitates easy exploration and discovery of books by enabling users to browse and retrieve information about book genres available in the system. Users can explore different genres, view popular books within each genre, and discover new books based on their interests.
 
-- **Service Discovery**: Utilizes Eureka server for service discovery and registration, allowing microservices to dynamically discover and communicate with each other.
+- **Gateway Server**: Serves as the central entry point to the system, routing incoming requests from clients to the appropriate microservices. It provides a unified interface for clients to interact with the various functionalities offered by the system, abstracting away the complexities of the underlying microservices architecture.
+
+- **Service Discovery**: Leverages Eureka server for service registration and discovery, enabling seamless communication and collaboration between microservices. Eureka allows microservices to dynamically register themselves with the service registry upon startup and discover other services based on their logical names, ensuring robustness and scalability in distributed systems.
+
 
 ### Architecture
 
@@ -36,7 +39,7 @@ The architecture of the system follows the principles of microservices, where ea
 
 5. **Access Gateway Server**: Once all microservices are running, access the gateway server to interact with the system's functionalities.
 
-### Technologies Used
+## Technologies Used
 
 - **Spring Boot**: For building microservices and handling core functionalities.
 - **Spring Cloud**: For implementing service discovery, routing, and other cloud-native features.
@@ -44,12 +47,17 @@ The architecture of the system follows the principles of microservices, where ea
 - **Netflix Eureka**: For service registration and discovery.
 - **Spring Security**: For implementing user authentication and authorization.
 - **WebClient**: For making HTTP requests to other microservices.
+- **MongoDB**: As the database for storing and managing data across microservices.
+- **JWT (JSON Web Tokens)**: For securely transmitting information between parties as a JSON object.
+- **Resilience4j**: For implementing fault tolerance and resilience in microservices, providing features like circuit breakers, retries, and rate limiting.
+- **Kafka**: For building real-time streaming data pipelines and applications, enabling microservices to communicate asynchronously and decoupling systems.
+- **Docker**: For containerizing microservices, enabling easy deployment and scalability in various environments.
+- **Maven**: For project management and dependency management, ensuring consistent builds and easy dependency resolution.
 
 ### Contributors
 
-- [Fedor Bondarev]
-- [...]
+- Fedor Bondarev
 
 ### License
 
-This project is licensed under the [MIT License] License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
