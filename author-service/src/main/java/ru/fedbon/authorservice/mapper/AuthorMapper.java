@@ -16,7 +16,10 @@ public interface AuthorMapper {
     @AfterMapping
     default void calculateVotesCount(@MappingTarget AuthorDto authorDto, Author author) {
         if (author.getVoteByUserList() != null) {
-            authorDto.setVotesCount(author.getVoteByUserList().size());
+            long enabledVotesCount = author.getVoteByUserList().stream()
+                    .filter(vote -> Boolean.TRUE.equals(vote.getIsEnabled()))
+                    .count();
+            authorDto.setVotesCount((int) enabledVotesCount);
         } else {
             authorDto.setVotesCount(0);
         }

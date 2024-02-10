@@ -10,8 +10,6 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
-
 
 @Builder
 @AllArgsConstructor
@@ -19,27 +17,15 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode
-@Document("votes")
-public class Vote {
+@Document("votes_books")
+public class VoteBook {
 
     @Id
     private String id;
 
-    private String text;
+    private String userId;
 
     private String bookId;
 
-    private String bookTitle;
-
-    private String bookAuthorName;
-
-    private String userId;
-
-    private String username;
-
-    private LocalDateTime createdAt;
-
-    private int likeCount;
-
-    private int dislikeCount;
+    private Boolean isPositive;
 }

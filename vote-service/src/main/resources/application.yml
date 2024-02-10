@@ -10,11 +10,14 @@ spring:
       enabled: true
   application:
     name: vote-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 mongock:
-  runner-type: "InitializingBean"
-  change-logs-scan-package:
-    - ru.fedbon.voteservice.mongock.changelog
+  change-logs-scan-package: false
   mongo-db:
     write-concern:
       journal: false

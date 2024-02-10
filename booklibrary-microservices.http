@@ -24,7 +24,7 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 ###Get user infromation by id
-GET http://localhost:8080/api/v1/user/65c50d9900c3fe573604ed7b
+GET http://localhost:8080/api/v1/user/65c7531c0c5f180d19351379
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
@@ -53,6 +53,21 @@ GET http://localhost:8080/api/v1/books?genre=1
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
+###Get author by id
+GET http://localhost:8080/api/v1/authors/1
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###Vote by authorId
+POST http://localhost:8080/api/v1/vote/author
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "authorId": "1",
+  "isEnabled": true
+}
+
 ###Sort all books voted by user id by negative field
 GET http://localhost:8080/api/v1/books?userId=3&sort=negative
 Authorization: Bearer {{auth_token}}
@@ -62,8 +77,6 @@ Content-Type: application/json
 GET http://localhost:8080/api/v1/comments/user/1
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
-
-
 
 
 

@@ -10,6 +10,18 @@ spring:
       enabled: true
   application:
     name: author-service
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: authorGroup
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            type:
+              mapping: ru.fedbon.voteservice.producer.VoteAuthorMessage:ru.fedbon.authorservice.consumer.VoteAuthorMessage
 
 mongock:
   runner-type: "InitializingBean"

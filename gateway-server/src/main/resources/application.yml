@@ -28,7 +28,7 @@ spring:
         - id: author-service
           uri: lb://author-service
           predicates:
-            - Path=/api/v1/author/**
+            - Path=/api/v1/authors/**
           filters:
             - AuthFilter
 
@@ -43,6 +43,13 @@ spring:
           uri: lb://comment-service
           predicates:
             - Path=/api/v1/comments/**
+          filters:
+            - AuthFilter
+
+        - id: vote-service
+          uri: lb://vote-service
+          predicates:
+            - Path=/api/v1/vote/**
           filters:
             - AuthFilter
 

@@ -10,10 +10,13 @@ import ru.fedbon.authorservice.model.Author;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 @ChangeLog(order = "001")
 public class DatabaseChangelog {
+
+    private final Random random = new Random();
 
     private final Author author1 = new Author("1", "Лев Толстой", generateVotesList(10));
 
@@ -31,7 +34,8 @@ public class DatabaseChangelog {
         List<VoteByUser> votesList = new ArrayList<>();
 
         for (int i = 1; i <= count; i++) {
-            votesList.add(new VoteByUser(String.valueOf(i)));
+            boolean isEnabled = random.nextBoolean();
+            votesList.add(new VoteByUser(String.valueOf(i), isEnabled));
         }
 
         return votesList;

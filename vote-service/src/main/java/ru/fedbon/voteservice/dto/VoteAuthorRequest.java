@@ -1,7 +1,8 @@
-package ru.fedbon.authorservice.model;
+package ru.fedbon.voteservice.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,10 +12,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class VoteByUser {
+@EqualsAndHashCode
+public class VoteAuthorRequest {
 
     @NotBlank
     private String userId;
+
+    @NotBlank
+    private String authorId;
 
     private Boolean isEnabled;
 }

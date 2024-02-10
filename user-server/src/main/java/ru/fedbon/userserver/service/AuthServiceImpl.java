@@ -107,7 +107,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private TokenDetailsVo generateToken(Map<String, Object> claims, String subject) {
-        long expirationTimeInMillis = expirationInSeconds * 250L;
+        long expirationTimeInMillis = expirationInSeconds * 1500L;
         Date expirationDate = new Date(new Date().getTime() + expirationTimeInMillis);
 
         return generateToken(expirationDate, claims, subject);

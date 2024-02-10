@@ -28,7 +28,9 @@ public class AuthorRestControllerV1 {
     public Mono<Long> countUsersVotedForAuthor(@PathVariable String id) {
         return authorRepository.findById(id)
                 .switchIfEmpty(Mono.error(new NotFoundException("No author found with id: " + id)))
-                .map(author -> (long) author.getVoteByUserList().size())
+                .map(author -> author.getVoteByUserList().stream()
+                        .filter(vote -> Boolean.TRUE.equals(vote.getIsEnabled()))
+                        .count())
                 .doOnSuccess(count -> log.info("Counted users voted for author with id {}: {}", id, count));
     }
 
@@ -43,7 +45,8 @@ public class AuthorRestControllerV1 {
     @GetMapping("/user/{id}")
     public Flux<AuthorDto> handleGetAuthorsVotedByUserId(@PathVariable String id) {
         return authorRepository.findAll()
-                .filter(author -> author.getVoteByUserList().stream().anyMatch(vote -> vote.getUserId().equals(id)))
+                .filter(author -> author.getVoteByUserList().stream()
+                        .anyMatch(vote -> vote.getUserId().equals(id) && Boolean.TRUE.equals(vote.getIsEnabled())))
                 .switchIfEmpty(Mono.error(new NotFoundException("No authors found voted by user with id: " + id)))
                 .map(authorMapper::map)
                 .doOnNext(authorDto -> log.info("Author voted by user with id {} found: {}", id, authorDto.getName()));

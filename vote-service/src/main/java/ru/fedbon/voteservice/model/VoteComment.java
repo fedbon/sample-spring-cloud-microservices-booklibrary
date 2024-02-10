@@ -1,6 +1,8 @@
-package ru.fedbon.authorservice.model;
+package ru.fedbon.voteservice.model;
+
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,22 +10,22 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
 
-
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
-@Document("authors")
-public class Author {
+@Document("votes_comments")
+public class VoteComment {
 
     @Id
     private String id;
 
-    private String name;
+    private String userId;
 
-    private List<VoteByUser> voteByUserList;
+    private String commentId;
 
+    private Boolean isPositive;
 }
