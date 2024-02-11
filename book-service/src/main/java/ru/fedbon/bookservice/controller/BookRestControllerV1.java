@@ -128,7 +128,7 @@ public class BookRestControllerV1 {
     private Mono<AuthorResponseDto> fetchAuthorInfo(String authorId) {
         return webClientBuilder.build()
                 .get()
-                .uri("http://author-service/api/v1/author/{id}", authorId)
+                .uri("http://author-service/api/v1/authors/{id}", authorId)
                 .retrieve()
                 .bodyToMono(AuthorResponseDto.class)
                 .transform(it -> cbFactory.create("author-service")

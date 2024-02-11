@@ -65,7 +65,7 @@ Content-Type: application/json
 
 {
   "authorId": "1",
-  "isEnabled": true
+  "isEnabled": false
 }
 
 ###Sort all books voted by user id by negative field

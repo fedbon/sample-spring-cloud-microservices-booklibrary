@@ -10,6 +10,8 @@ spring:
       enabled: true
   application:
     name: comment-service
+#  config:
+#    import: optional:configserver:http://config-server:8888
   profiles:
     active: resilience4j
 

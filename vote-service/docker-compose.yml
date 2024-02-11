@@ -1,8 +1,0 @@
-services:
-  mongo:
-    container_name: vote-service-mongodb
-    image: mongo:latest
-    ports:
-      - 30006:27017
-    restart: always
-    command: mongod --bind_ip_all

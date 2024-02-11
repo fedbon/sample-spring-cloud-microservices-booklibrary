@@ -10,9 +10,11 @@ spring:
       enabled: true
   application:
     name: author-service
+#  config:
+#    import: optional:configserver:http://config-server:8888
   kafka:
     consumer:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
       group-id: authorGroup
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer

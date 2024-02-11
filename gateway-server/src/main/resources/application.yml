@@ -13,8 +13,8 @@ spring:
 #    web-application-type: reactive
   application:
     name: gateway-server
-  #  config:
-  #    import: optional:configserver:http://config-service:8888
+#  config:
+#    import: optional:configserver:http://config-server:8888
   cloud:
     discovery:
       enabled: true
@@ -23,7 +23,7 @@ spring:
       discovery:
         locator:
           enabled: true
-          lowerCaseServiceId: true
+#          lowerCaseServiceId: true
       routes:
         - id: author-service
           uri: lb://author-service

@@ -1,39 +1,12 @@
 services:
-  comment-service-mongo:
-    container_name: comment-service-mongodb
-    image: mongo:latest
+
+  config-server:
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
+    container_name: config-server
     ports:
-      - 30005:27017
-    restart: always
-    command: mongod --bind_ip_all
-  author-service-mongo:
-    container_name: author-service-mongodb
-    image: mongo:latest
-    ports:
-      - 30004:27017
-    restart: always
-    command: mongod --bind_ip_all
-  book-service-mongo:
-    container_name: book-service-mongodb
-    image: mongo:latest
-    ports:
-      - 30003:27017
-    restart: always
-    command: mongod --bind_ip_all
-  user-server-mongo:
-    container_name: user-server-mongodb
-    image: mongo:latest
-    ports:
-      - 30002:27017
-    restart: always
-    command: mongod --bind_ip_all
-  vote-serice-mongo:
-    container_name: vote-service-mongodb
-    image: mongo:latest
-    ports:
-      - 30006:27017
-    restart: always
-    command: mongod --bind_ip_all
+      - 8888:8888
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -46,7 +19,7 @@ services:
     image: confluentinc/cp-kafka:latest
     container_name: broker
     ports:
-      - "9092:9092"
+      - 9092:9092
     depends_on:
       - zookeeper
     environment:
@@ -57,3 +30,158 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+  author-service-mongo:
+    container_name: author-service-mongodb
+    image: mongo:latest
+    ports:
+      - 30004:27017
+    restart: always
+    command: mongod --bind_ip_all
+
+  book-service-mongo:
+    container_name: book-service-mongodb
+    image: mongo:latest
+    ports:
+      - 30003:27017
+    restart: always
+    command: mongod --bind_ip_all
+
+  comment-service-mongo:
+    container_name: comment-service-mongodb
+    image: mongo:latest
+    ports:
+      - 30005:27017
+    restart: always
+    command: mongod --bind_ip_all
+
+  user-server-mongo:
+    container_name: user-server-mongodb
+    image: mongo:latest
+    ports:
+      - 30002:27017
+    restart: always
+    command: mongod --bind_ip_all
+
+  vote-service-mongo:
+    container_name: vote-service-mongodb
+    image: mongo:latest
+    ports:
+      - 30006:27017
+    restart: always
+    command: mongod --bind_ip_all
+
+  eureka-discovery-server:
+    build:
+      context: ./eureka-discovery-server
+      dockerfile: Dockerfile
+    container_name: eureka-discovery-server
+#    depends_on:
+#      - config-server
+    ports:
+      - 8761:8761
+    restart: on-failure
+
+  user-server:
+    build:
+      context: ./user-server
+      dockerfile: Dockerfile
+    container_name: user-server
+    ports:
+      - 8083:8083
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+#      - config-server
+      - user-server-mongo
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://user-server-mongodb:27017/user-server-mongodb
+      - EUREKA_URI=http://eureka-discovery-server:8761/eureka
+
+  author-service:
+    build:
+      context: ./author-service
+      dockerfile: Dockerfile
+    container_name: author-service
+    ports:
+      - 9876:9876
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+#      - config-server
+      - author-service-mongo
+      - broker
+      - zookeeper
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://author-service-mongodb:27017/author-service-mongodb
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=localhost:9092
+      - EUREKA_URI=http://eureka-discovery-server:8761/eureka
+
+  book-service:
+    build:
+      context: ./book-service
+      dockerfile: Dockerfile
+    container_name: book-service
+    ports:
+      - 8765:8765
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+#      - config-server
+      - book-service-mongo
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://book-service-mongodb:27017/book-service-mongodb
+      - EUREKA_URI=http://eureka-discovery-server:8761/eureka
+
+  comment-service:
+    build:
+      context: ./comment-service
+      dockerfile: Dockerfile
+    container_name: comment-service
+    ports:
+      - 9877:9877
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+#      - config-server
+      - comment-service-mongo
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://comment-service-mongodb:27017/comment-service-mongodb
+      - EUREKA_URI=http://eureka-discovery-server:8761/eureka
+
+  gateway-server:
+    build:
+      context: ./gateway-server
+      dockerfile: Dockerfile
+    container_name: gateway-server
+    ports:
+      - 8080:8080
+    depends_on:
+      - eureka-discovery-server
+    environment:
+      - EUREKA_URI=http://eureka-discovery-server:8761/eureka
+    restart: on-failure
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8060/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  vote-service:
+    build:
+      context: ./vote-service
+      dockerfile: Dockerfile
+    container_name: vote-service
+    ports:
+      - 9885:9885
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+#      - config-server
+      - vote-service-mongo
+      - broker
+      - zookeeper
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://vote-service-mongodb:27017/vote-service-mongodb
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=//localhost:9092
+      - EUREKA_URI=http://eureka-discovery-server:8761/eureka

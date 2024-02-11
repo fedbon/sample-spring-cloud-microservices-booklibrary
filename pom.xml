@@ -17,6 +17,7 @@
 
     <modules>
         <module>book-service</module>
+        <module>config-server</module>
         <module>author-service</module>
         <module>comment-service</module>
         <module>vote-service</module>
@@ -29,7 +30,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <spring-cloud.version>2023.0.0</spring-cloud.version>
-        <spring-cloud-starter-netflix.version>4.1.0</spring-cloud-starter-netflix.version>
+        <spring-cloud-starter-netflix.version>4.1.1</spring-cloud-starter-netflix.version>
 
         <mongock-spring.version>4.3.8</mongock-spring.version>
         <flapdoodle.version>4.12.2</flapdoodle.version>

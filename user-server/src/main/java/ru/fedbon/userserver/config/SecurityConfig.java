@@ -2,6 +2,7 @@ package ru.fedbon.userserver.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -15,7 +16,6 @@ import ru.fedbon.userserver.util.JwtUtil;
 import ru.fedbon.userserver.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
@@ -25,7 +25,6 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Configuration
-//@EnableReactiveMethodSecurity
 @EnableWebFluxSecurity
 @RequiredArgsConstructor
 public class SecurityConfig implements ReactiveAuthenticationManager {
