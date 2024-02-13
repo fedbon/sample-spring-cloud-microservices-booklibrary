@@ -2,13 +2,17 @@ server:
   port: 8888
 
 spring:
-  main:
-    web-application-type: reactive
   application:
     name: config-server
   cloud:
     config:
       server:
-          git:
-            uri: https://github.com/fedbon/config-repo.git
-            search-paths: {application}
+        git:
+          uri: https://github.com/fedbon/config-repo.git
+#        bootstrap: true
+#        encrypt:
+#          enabled: false
+#  security:
+#    user:
+#      name: root
+#      password: root

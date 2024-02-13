@@ -2,7 +2,7 @@ POST http://localhost:8083/api/v1/auth/signup
 Content-Type: application/json
 
 {
-  "username": "max_payne",
+  "username": "max_payne2",
   "password": "123",
   "first_name": "Max",
   "last_name": "Payne"
@@ -13,7 +13,7 @@ POST http://localhost:8083/api/v1/auth/signin
 Content-Type: application/json
 
 {
-  "username": "max_payne",
+  "username": "max_payne2",
   "password": "123"
 }
 

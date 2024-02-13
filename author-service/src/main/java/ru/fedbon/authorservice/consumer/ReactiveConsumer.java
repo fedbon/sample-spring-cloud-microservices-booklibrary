@@ -35,7 +35,7 @@ public class ReactiveConsumer implements CommandLineRunner {
                 consumerRecord.topic(),
                 consumerRecord.offset());
 
-        VoteAuthorMessage voteAuthorMessage = consumerRecord.value();
+        var voteAuthorMessage = consumerRecord.value();
         return authorRepository.findById(voteAuthorMessage.getAuthorId())
                 .flatMap(author -> {
                     updateOrAddVote(author, voteAuthorMessage);

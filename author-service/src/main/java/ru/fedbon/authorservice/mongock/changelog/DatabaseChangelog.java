@@ -28,7 +28,7 @@ public class DatabaseChangelog {
 
     private final Author author5 = new Author("5", "Дмитрий Глуховский", generateVotesList(2));
 
-    private final Author author6 = new Author("6", "Франц Кафка", null);
+    private final Author author6 = new Author("6", "Франц Кафка", generateVotesList(14));
 
     private List<VoteByUser> generateVotesList(int count) {
         List<VoteByUser> votesList = new ArrayList<>();
