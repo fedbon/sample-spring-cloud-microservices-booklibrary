@@ -21,6 +21,7 @@ services:
 
   broker:
     image: confluentinc/cp-kafka:latest
+    hostname: broker
     container_name: broker
     ports:
       - 9092:9092
@@ -42,31 +43,36 @@ services:
       context: ./eureka-discovery-server
       dockerfile: Dockerfile
     container_name: eureka-discovery-server
-    depends_on:
-      - config-server
     ports:
       - 8761:8761
+    depends_on:
+      - config-server
     restart: on-failure
+    environment:
+      CONFIG_SERVER_URI: http://config-server:8888
     networks:
       - backend
 
-#  gateway-server:
-#    build:
-#      context: ./gateway-server
-#      dockerfile: Dockerfile
-#    container_name: gateway-server
-#    ports:
-#      - 8080:8080
-#    depends_on:
-#      - eureka-discovery-server
-#    networks:
-#      - backend
-#    restart: on-failure
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
+  gateway-server:
+    build:
+      context: ./gateway-server
+      dockerfile: Dockerfile
+    container_name: gateway-server
+    ports:
+      - 8080:8080
+    depends_on:
+      - eureka-discovery-server
+    networks:
+      - backend
+    environment:
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
+    restart: on-failure
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   user-server:
     build:
@@ -84,8 +90,9 @@ services:
       - backend
       - mongo-users
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://user-server-mongodb:27017/user-server-mongodb
-      - EUREKA_URI=http://eureka-discovery-server:8761/eureka
+      SPRING_DATA_MONGODB_URI: mongodb://user-server-mongodb:27017/user-server-mongodb
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
   user-server-mongo:
     container_name: user-server-mongodb
     image: mongo:latest
@@ -96,27 +103,28 @@ services:
       - mongo-users
     command: mongod --bind_ip_all
 
-#  author-service:
-#    build:
-#      context: ./author-service
-#      dockerfile: Dockerfile
-#    container_name: author-service
-#    ports:
-#      - 9876:9876
-#    restart: always
-#    depends_on:
-#      - eureka-discovery-server
-#      - config-server
-#      - author-service-mongo
-#      - broker
-#      - zookeeper
-#    networks:
-#      - backend
-#      - mongo-authors
-#    environment:
-#      - SPRING_DATA_MONGODB_URI=mongodb://author-service-mongodb:27017/author-service-mongodb
-#      - EUREKA_URI=http://eureka-discovery-server:8761/eureka
-#      - KAFKA_ADVERTISED_LISTENERS=broker:29092
+  author-service:
+    build:
+      context: ./author-service
+      dockerfile: Dockerfile
+    container_name: author-service
+    ports:
+      - 9876:9876
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+      - config-server
+      - author-service-mongo
+      - broker
+      - zookeeper
+    networks:
+      - backend
+      - mongo-authors
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://author-service-mongodb:27017/author-service-mongodb
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
+      SPRING_KAFKA_BOOTSTRAP-SERVERS: broker:29092
   author-service-mongo:
     container_name: author-service-mongodb
     image: mongo:latest
@@ -143,8 +151,9 @@ services:
       - backend
       - mongo-books
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://book-service-mongodb:27017/book-service-mongodb
-      - EUREKA_URI=http://eureka-discovery-server:8761/eureka
+      SPRING_DATA_MONGODB_URI: mongodb://book-service-mongodb:27017/book-service-mongodb
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
   book-service-mongo:
     container_name: book-service-mongodb
     image: mongo:latest
@@ -171,8 +180,9 @@ services:
       - backend
       - mongo-comments
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://comment-service-mongodb:27017/comment-service-mongodb
-      - EUREKA_URI=http://eureka-discovery-server:8761/eureka
+      SPRING_DATA_MONGODB_URI: mongodb://comment-service-mongodb:27017/comment-service-mongodb
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
   comment-service-mongo:
     container_name: comment-service-mongodb
     image: mongo:latest
@@ -184,27 +194,28 @@ services:
     restart: always
     command: mongod --bind_ip_all
 
-#  vote-service:
-#    build:
-#      context: ./vote-service
-#      dockerfile: Dockerfile
-#    container_name: vote-service
-#    ports:
-#      - 9885:9885
-#    restart: always
-#    depends_on:
-#      - eureka-discovery-server
-#      - config-server
-#      - vote-service-mongo
-#      - broker
-#      - zookeeper
-#    networks:
-#      - backend
-#      - mongo-votes
-#    environment:
-#      - SPRING_DATA_MONGODB_URI=mongodb://vote-service-mongodb:27017/vote-service-mongodb
-#      - EUREKA_URI=eureka-discovery-server:8761/eureka
-#      - SPRING_KAFKA_BOOTSTRAP_SERVERS=https://broker:9092
+  vote-service:
+    build:
+      context: ./vote-service
+      dockerfile: Dockerfile
+    container_name: vote-service
+    ports:
+      - 9885:9885
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+      - config-server
+      - vote-service-mongo
+      - broker
+      - zookeeper
+    networks:
+      - backend
+      - mongo-votes
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://vote-service-mongodb:27017/vote-service-mongodb
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: broker:29092
   vote-service-mongo:
     container_name: vote-service-mongodb
     image: mongo:latest

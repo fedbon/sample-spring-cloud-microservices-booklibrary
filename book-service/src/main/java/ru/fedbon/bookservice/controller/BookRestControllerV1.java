@@ -86,6 +86,41 @@ public class BookRestControllerV1 {
                 .doOnNext(bookDto -> log.info("Books retrieved successfully for Author ID: {}", authorId));
     }
 
+    @GetMapping(params = "user")
+    public Flux<BookWithAuthorInfoAndCommentsDto> handleGetAllByUserId(
+            @RequestParam(name = "user") String userId,
+            @RequestParam(name = "sort", defaultValue = "positive") String sort) {
+        return bookRepository.findAll()
+                .filter(book -> shouldIncludeBook(book, userId, sort))
+                .flatMap(book -> enrichBookWithAuthorInfoAndComments(bookMapper
+                        .mapToBookWithAuthorsAndCommentsDto(book)))
+                .sort(this::compareBooksByRating);
+    }
+
+    private boolean shouldIncludeBook(Book book, String userId, String sort) {
+        if ("positive".equalsIgnoreCase(sort)) {
+            return hasPositiveVoteByUser(book, userId);
+        } else if ("negative".equalsIgnoreCase(sort)) {
+            return hasNegativeVoteByUser(book, userId);
+        }
+        return false;
+    }
+
+    private boolean hasPositiveVoteByUser(Book book, String userId) {
+        return book.getVoteByUserList().stream()
+                .anyMatch(vote -> vote.getUserId().equals(userId) && vote.isPositive());
+    }
+
+    private boolean hasNegativeVoteByUser(Book book, String userId) {
+        return book.getVoteByUserList().stream()
+                .anyMatch(vote -> vote.getUserId().equals(userId) && !vote.isPositive());
+    }
+
+    private int compareBooksByRating(BookWithAuthorInfoAndCommentsDto bookDto1,
+                                     BookWithAuthorInfoAndCommentsDto bookDto2) {
+        return Double.compare(bookDto2.getRating(), bookDto1.getRating());
+    }
+
     private Mono<BookWithAuthorInfoDto> enrichBookWithAuthorInfo(Book book) {
         return fetchAuthorInfo(book.getAuthorId())
                 .map(authorDto -> {
@@ -94,19 +129,6 @@ public class BookRestControllerV1 {
                     return bookWithAuthorsDto;
                 })
                 .doOnNext(bookDto -> log.info("Enriched book with author info: {}", bookDto));
-    }
-
-    @GetMapping(params = "user")
-    public Flux<BookWithAuthorInfoAndCommentsDto> handleGetAllByUserId(
-            @RequestParam(name = "user") String userId,
-            @RequestParam(name = "sort", defaultValue = "positive") String sort) {
-        return bookRepository.findAll()
-                .filter(book -> book.getVoteByUserList().stream()
-                        .anyMatch(vote -> vote.getUserId().equals(userId)))
-                .flatMap(book -> enrichBookWithAuthorInfoAndComments(bookMapper
-                .mapToBookWithAuthorsAndCommentsDto(book)))
-                .sort((bookDto1, bookDto2) -> compareBooksByVote(bookDto1, bookDto2, sort))
-                .doOnNext(bookDto -> log.info("Returning book: {}", bookDto));
     }
 
     private Mono<BookWithAuthorInfoAndCommentsDto> enrichBookWithAuthorInfoAndComments(
@@ -131,10 +153,11 @@ public class BookRestControllerV1 {
                 .uri("http://author-service/api/v1/authors/{id}", authorId)
                 .retrieve()
                 .bodyToMono(AuthorResponseDto.class)
+                .doOnNext(authorDto -> log.info("Received author information: {}", authorDto))
                 .transform(it -> cbFactory.create("author-service")
                         .run(it, throwable -> Mono.just(new AuthorResponseDto(null,
-                                "Author information not available"))))
-                .doOnNext(authorDto -> log.info("Received author information: {}", authorDto));
+                                "Author information not available", null))));
+
     }
 
     private Flux<CommentResponseDto> fetchComments(String bookId) {

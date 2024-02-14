@@ -22,4 +22,6 @@ public class AuthorResponseDto {
 
     @NotBlank
     private String name;
+
+    private Integer votesCount;
 }

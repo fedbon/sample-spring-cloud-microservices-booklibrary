@@ -1,4 +1,4 @@
-###Register
+###REGISTER
 POST http://localhost:8080/api/v1/auth/signup
 Content-Type: application/json
 
@@ -9,7 +9,7 @@ Content-Type: application/json
   "last_name": "Payne"
 }
 
-###Log in
+###LOG IN
 POST http://localhost:8080/api/v1/auth/signin
 Content-Type: application/json
 
@@ -18,47 +18,82 @@ Content-Type: application/json
   "password": "12345"
 }
 
-###Get my account information
-GET http://localhost:8080/api/v1/user/my
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
-
-###Get user infromation by id
-GET http://localhost:8080/api/v1/user/65c7531c0c5f180d19351379
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
-
-###Validate token
+###VALIDATE TOKEN
 POST http://localhost:8080/api/v1/auth/validate?token={{auth_token}}
 #Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
-###Get book by id
-GET http://localhost:8080/api/v1/books/1
+###GET MY ACCOUNT INFORMATION
+GET http://localhost:8080/api/v1/user/my
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
-###Get all books
+###GET USER INFORMATION BY ID
+GET http://localhost:8080/api/v1/user/65ccfd292e9b5a720d7ceff6
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET ALL BOOKS
 GET http://localhost:8080/api/v1/books
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
-###Order books by createAt field in descent order. Set false to change the order
-GET http://localhost:8080/api/v1/books?order=createdAt&desc=true
+###ORDER BOOKS BY CREATEDAT FIELD IN ASCENDENT ORDER
+GET http://localhost:8080/api/v1/books?order=createdAt&desc=false
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
-###Get all books by genre id
+###ORDER BOOKS BY RATING FIELD IN ASCENDENT ORDER
+GET http://localhost:8080/api/v1/books?order=rating&desc=false
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET BOOK BY ID
+GET http://localhost:8080/api/v1/books/1
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET ALL BOOKS BY GENRE ID
 GET http://localhost:8080/api/v1/books?genre=1
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
-###Get author by id
+###GET ALL BOOKS BY AUTHOR ID
+GET http://localhost:8080/api/v1/books?author=2
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET ALL BOOKS VOTED BY USER ID
+GET http://localhost:8080/api/v1/books?user=2
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET ALL BOOKS WITH NEGATIVE VOTES BY USER ID
+GET http://localhost:8080/api/v1/books?user=2&sort=negative
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET ALL GENRES
+GET http://localhost:8080/api/v1/genres
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET ALL COMMENTS BY USER ID
+GET http://localhost:8080/api/v1/comments/user/1
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET ALL COMMENTS BY BOOK ID
+GET http://localhost:8080/api/v1/comments/book/1
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET AUTHOR BY ID
 GET http://localhost:8080/api/v1/authors/1
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
-###Vote by authorId
+###VOTE BY AUTHOR ID
 POST http://localhost:8080/api/v1/vote/author
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
@@ -68,15 +103,11 @@ Content-Type: application/json
   "isEnabled": false
 }
 
-###Sort all books voted by user id by negative field
-GET http://localhost:8080/api/v1/books?userId=3&sort=negative
+###GET AUTHOR VOTED BY USER ID
+GET http://localhost:8080/api/v1/authors/user/1
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
-###Get all comments by user id
-GET http://localhost:8080/api/v1/comments/user/1
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
 
 
 

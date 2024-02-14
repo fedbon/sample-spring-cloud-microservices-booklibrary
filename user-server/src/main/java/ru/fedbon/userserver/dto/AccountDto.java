@@ -15,9 +15,6 @@ public class AccountDto {
     private String username;
 
     @NotBlank
-    private Integer commentsCount;
-
-    @NotBlank
     private Integer booksCount;
 
     @NotBlank

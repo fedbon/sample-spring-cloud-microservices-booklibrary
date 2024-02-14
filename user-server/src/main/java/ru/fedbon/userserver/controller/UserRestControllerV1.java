@@ -37,18 +37,15 @@ public class UserRestControllerV1 {
         if (authentication != null) {
             var customPrincipal = (CustomPrincipal) authentication.getPrincipal();
             var userMono = userRepository.findById(customPrincipal.getId());
-            var commentsCountMono = fetchCommentsCount("1");
             var booksCountMono = fetchBooksCount("1");
             var authorsCountMono = fetchAuthorsCount("1");
 
-            return Mono.zip(userMono, commentsCountMono, booksCountMono, authorsCountMono)
+            return Mono.zip(userMono, booksCountMono, authorsCountMono)
                     .map(tuple -> {
                         var user = tuple.getT1();
-                        var commentsCount = tuple.getT2();
-                        var booksCount = tuple.getT3();
-                        var authorsCount = tuple.getT4();
+                        var booksCount = tuple.getT2();
+                        var authorsCount = tuple.getT3();
                         var accountDto = userMapper.mapUserToAccountDto(user);
-                        accountDto.setCommentsCount(commentsCount.intValue());
                         accountDto.setBooksCount(booksCount.intValue());
                         accountDto.setAuthorsCount(authorsCount.intValue());
                         return accountDto;
