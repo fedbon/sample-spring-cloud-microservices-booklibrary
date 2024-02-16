@@ -66,10 +66,5 @@ public class ReactiveConsumer {
             author.getVoteByUserList().add(newVote);
         }
     }
-
-//    @Override
-//    public void run(String... args) {
-//        consumeVoteAuthorMessage().subscribe();
-//    }
 }
 
