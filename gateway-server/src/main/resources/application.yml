@@ -1,0 +1,59 @@
+server:
+  port: 8080
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+
+spring:
+  application:
+    name: gateway-server
+  config:
+    import: optional:configserver:${CONFIG_SERVER_URI:http://localhost:8888}
+  cloud:
+    discovery:
+      enabled: true
+    gateway:
+      enabled: true
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: author-service
+          uri: lb://author-service
+          predicates:
+            - Path=/api/v1/authors/**
+          filters:
+            - AuthFilter
+
+        - id: book-service
+          uri: lb://book-service
+          predicates:
+            - Path=/api/v1/books/**,/api/v1/genres/**
+          filters:
+            - AuthFilter
+
+        - id: comment-service
+          uri: lb://comment-service
+          predicates:
+            - Path=/api/v1/comments/**
+          filters:
+            - AuthFilter
+
+        - id: vote-service
+          uri: lb://vote-service
+          predicates:
+            - Path=/api/v1/vote/**
+          filters:
+            - AuthFilter
+
+        - id: user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/api/v1/auth/**,/api/v1/user/**
+logging:
+  level:
+    root: INFO

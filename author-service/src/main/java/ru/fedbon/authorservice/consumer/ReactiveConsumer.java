@@ -1,9 +1,9 @@
 package ru.fedbon.authorservice.consumer;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -16,11 +16,16 @@ import ru.fedbon.authorservice.repository.AuthorRepository;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReactiveConsumer implements CommandLineRunner {
+public class ReactiveConsumer {
 
     private final ReactiveKafkaConsumerTemplate<String, VoteAuthorMessage> reactiveKafkaConsumerTemplate;
 
     private final AuthorRepository authorRepository;
+
+    @PostConstruct
+    public void init() {
+        consumeVoteAuthorMessage().subscribe();
+    }
 
     public Flux<VoteAuthorMessage> consumeVoteAuthorMessage() {
         return reactiveKafkaConsumerTemplate
@@ -62,9 +67,9 @@ public class ReactiveConsumer implements CommandLineRunner {
         }
     }
 
-    @Override
-    public void run(String... args) {
-        consumeVoteAuthorMessage().subscribe();
-    }
+//    @Override
+//    public void run(String... args) {
+//        consumeVoteAuthorMessage().subscribe();
+//    }
 }
 
