@@ -100,7 +100,7 @@ Content-Type: application/json
 
 {
   "authorId": "1",
-  "isEnabled": false
+  "isEnabled": true
 }
 
 ###GET AUTHOR VOTED BY USER ID

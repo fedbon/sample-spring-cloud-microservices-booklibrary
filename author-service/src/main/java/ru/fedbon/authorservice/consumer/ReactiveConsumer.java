@@ -3,11 +3,9 @@ package ru.fedbon.authorservice.consumer;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import ru.fedbon.authorservice.model.Author;
 import ru.fedbon.authorservice.model.VoteByUser;
 
@@ -30,25 +28,24 @@ public class ReactiveConsumer {
     public Flux<VoteAuthorMessage> consumeVoteAuthorMessage() {
         return reactiveKafkaConsumerTemplate
                 .receiveAutoAck()
-                .flatMap(this::processConsumerRecord);
-    }
+                .flatMap(consumerRecord -> {
+                    log.info("Received key={}, value={} from topic={}, offset={}",
+                            consumerRecord.key(),
+                            consumerRecord.value(),
+                            consumerRecord.topic(),
+                            consumerRecord.offset());
 
-    private Mono<VoteAuthorMessage> processConsumerRecord(ConsumerRecord<String, VoteAuthorMessage> consumerRecord) {
-        log.info("Received key={}, value={} from topic={}, offset={}",
-                consumerRecord.key(),
-                consumerRecord.value(),
-                consumerRecord.topic(),
-                consumerRecord.offset());
-
-        var voteAuthorMessage = consumerRecord.value();
-        return authorRepository.findById(voteAuthorMessage.getAuthorId())
-                .flatMap(author -> {
-                    updateOrAddVote(author, voteAuthorMessage);
-                    return authorRepository.save(author).thenReturn(voteAuthorMessage);
-                })
-                .doOnNext(msg -> log.info("Successfully consumed {}={}", VoteAuthorMessage.class.getSimpleName(), msg))
-                .doOnError(throwable -> log.error("Something bad happened while processing message: {}",
-                        throwable.getMessage()));
+                    var voteAuthorMessage = consumerRecord.value();
+                    return authorRepository.findById(voteAuthorMessage.getAuthorId())
+                            .flatMap(author -> {
+                                updateOrAddVote(author, voteAuthorMessage);
+                                return authorRepository.save(author).thenReturn(voteAuthorMessage);
+                            })
+                            .doOnNext(msg -> log.info("Successfully consumed {}={}",
+                                    VoteAuthorMessage.class.getSimpleName(), msg))
+                            .doOnError(throwable -> log.error("Something bad happened while processing message: {}",
+                                    throwable.getMessage()));
+                });
     }
 
     private void updateOrAddVote(Author author, VoteAuthorMessage message) {
