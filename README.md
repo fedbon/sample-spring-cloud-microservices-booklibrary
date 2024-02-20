@@ -18,6 +18,8 @@ This repository contains a sample implementation of a book library system built 
 
 The architecture of the system follows the principles of microservices, where each microservice is designed to be independently deployable and scalable. The system employs reactive programming with Spring WebFlux to handle asynchronous and non-blocking I/O operations efficiently.
 
+![Logo](booklibrary-architecture.png)
+
 ## Setup Instructions
 
 1. **Clone Repository**: Clone this repository to your local machine.
