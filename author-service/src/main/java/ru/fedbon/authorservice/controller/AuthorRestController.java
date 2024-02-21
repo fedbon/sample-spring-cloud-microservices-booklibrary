@@ -18,7 +18,7 @@ import ru.fedbon.authorservice.repository.AuthorRepository;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/authors")
-public class AuthorRestControllerV1 {
+public class AuthorRestController {
 
     private final AuthorRepository authorRepository;
 

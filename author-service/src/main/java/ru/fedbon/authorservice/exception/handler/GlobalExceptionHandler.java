@@ -28,7 +28,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.NOT_FOUND.value(), "NOT_FOUND"));
     }
 
-
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleInternalServerError(Exception ex) {

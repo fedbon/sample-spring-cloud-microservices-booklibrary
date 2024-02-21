@@ -6,7 +6,7 @@ This repository contains a sample implementation of the Book Library system buil
 
 ## Infrastructure
 
-The Infrastructure of the system follows the principles of microservices, where each microservice is designed to be independently deployable and scalable. The system employs reactive programming with Spring WebFlux to handle asynchronous and non-blocking I/O operations efficiently.
+The infrastructure of the system follows the principles of microservices, where each microservice is designed to be independently deployable and scalable. The system employs reactive programming with Spring WebFlux to handle asynchronous and non-blocking I/O operations efficiently.
 
 ![Logo](booklibrary-architecture.png)
 
@@ -26,7 +26,8 @@ Uses Eureka server for service registration and discovery, ensuring seamless com
 
 ## Functional Services
 
-- **Book Service**: Allows users to perform operations on books, view detailed information such as title, author, genre, publication date, and ratings, and interact with comments.
+### Book Service
+Allows users to perform operations on books, view detailed information such as title, author, genre, publication date, and ratings, and interact with comments.
 
   | Method | Path                          | Description                                                            |
   |--------|-------------------------------|------------------------------------------------------------------------|
@@ -38,7 +39,8 @@ Uses Eureka server for service registration and discovery, ensuring seamless com
   | GET    | /api/v1/books?user            | Get all books by user, optionally sorted by positive or negative votes |
   | GET    | /api/v1/genres                | Get all genres, sorted by name in ascending order                      |
 
-- **Author Service**: Provides author profiles, including biographical information, authored books, and statistics. Users can search for authors and explore their data.
+### Author Service
+Provides author profiles, including biographical information, authored books, and statistics. Users can search for authors and explore their data.
 
   | Method | Path                            | Description                                            |
   |--------|---------------------------------|--------------------------------------------------------|
@@ -46,7 +48,8 @@ Uses Eureka server for service registration and discovery, ensuring seamless com
   | GET    | /api/v1/authors/{id}            | Get a specific author                                  |
   | GET    | /api/v1/authors/user/{id}       | Get all authors voted by a specific user               |
 
-- **Comment Service**: Manages user comments on books, including fetching by book or user ID, counting by user ID, and sorting by popularity or recency. Users can post, reply, and engage in discussions.
+### Comment Service
+Manages user comments on books, including fetching by book or user ID, counting by user ID, and sorting by popularity or recency. Users can post, reply, and engage in discussions.
 
   | Method | Path                             | Description                                                            |
   |--------|----------------------------------|------------------------------------------------------------------------|
@@ -54,7 +57,8 @@ Uses Eureka server for service registration and discovery, ensuring seamless com
   | GET    | /api/v1/comments/book/{id}       | Get all comments for a specific book, sorted by creation date          |
   | GET    | /api/v1/comments/user/{id}       | Get all comments made by a specific user, with associated book details |
 
-- **User Server**: Implements secure user registration, authentication via username/password, and JWT-based token authentication.
+### User Server
+Implements secure user registration, authentication via username/password, and JWT-based token authentication.
 
   | Method | Path                  | Description                                        |
   |--------|-----------------------|----------------------------------------------------|
@@ -95,6 +99,7 @@ By following these steps, you can effectively use the `booklibrary-microservices
 
 ## Technologies Used
 
+- ***Java***
 - ***Spring Boot***
 - ***Spring Cloud***
 - ***Spring WebFlux***
@@ -102,10 +107,10 @@ By following these steps, you can effectively use the `booklibrary-microservices
 - ***Spring Security***
 - ***JWT***
 - ***MongoDB***
+- ***MapStruct***
 - ***Resilience4j***
 - ***Kafka***
 - ***Docker***
-- ***MapStruct***
 
 ## Contributors
 

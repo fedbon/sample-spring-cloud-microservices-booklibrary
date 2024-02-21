@@ -21,7 +21,7 @@ import ru.fedbon.voteservice.repository.VoteAuthorRepository;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/vote")
-public class VoteRestControllerV1 {
+public class VoteRestController {
 
     private final VoteAuthorRepository voteAuthorRepository;
 

@@ -26,7 +26,7 @@ import java.util.Comparator;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/comments")
-public class CommentRestControllerV1 {
+public class CommentRestController {
 
     private final CommentRepository commentRepository;
 

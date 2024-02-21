@@ -7,7 +7,7 @@ spring:
       enabled: true
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:30002/user-server-mongodb}
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:30002/user-service-mongodb}
   application:
     name: user-server
   config:

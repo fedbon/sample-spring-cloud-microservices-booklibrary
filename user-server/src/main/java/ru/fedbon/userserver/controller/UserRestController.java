@@ -22,7 +22,7 @@ import ru.fedbon.userserver.repository.UserRepository;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
-public class UserRestControllerV1 {
+public class UserRestController {
 
     private final UserRepository userRepository;
 

@@ -25,7 +25,7 @@ import ru.fedbon.bookservice.repository.BookRepository;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/books")
-public class BookRestControllerV1 {
+public class BookRestController {
 
     private final BookRepository bookRepository;
 

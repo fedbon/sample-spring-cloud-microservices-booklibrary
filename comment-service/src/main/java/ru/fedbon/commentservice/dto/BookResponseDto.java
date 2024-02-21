@@ -1,6 +1,5 @@
 package ru.fedbon.commentservice.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,13 +16,10 @@ import lombok.ToString;
 @ToString
 public class BookResponseDto {
 
-    @NotBlank
     private String id;
 
-    @NotBlank
     private String title;
 
-    @NotBlank
     private String authorName;
 }
 

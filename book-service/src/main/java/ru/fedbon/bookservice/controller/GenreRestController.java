@@ -17,7 +17,7 @@ import ru.fedbon.bookservice.repository.GenreRepository;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/genres")
-public class GenreRestControllerV1 {
+public class GenreRestController {
 
     private final GenreRepository genreRepository;
 

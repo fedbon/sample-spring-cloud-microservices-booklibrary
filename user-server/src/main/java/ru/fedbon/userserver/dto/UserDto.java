@@ -1,6 +1,6 @@
 package ru.fedbon.userserver.dto;
 
-import jakarta.validation.constraints.NotBlank;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -18,12 +18,9 @@ import lombok.ToString;
 @ToString
 public class UserDto {
 
-    @NotBlank
     private String username;
 
-    @NotBlank
     private Integer commentsCount;
 
-    @NotBlank
     private Integer booksCount;
 }
