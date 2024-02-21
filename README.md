@@ -2,13 +2,22 @@
 
 ## Overview
 
-This repository contains a sample implementation of a book library system built using Spring Cloud microservices architecture. The project is divided into several microservices, each responsible for specific functionalities such as managing books, authors, comments, user authentication, and more.
+This repository contains a sample implementation of the Book Library system built using Spring Cloud microservices architecture. The project is divided into several microservices, each responsible for specific functionalities such as managing books, authors, comments, user authentication, and more.
 
 ## Architecture
 
 The architecture of the system follows the principles of microservices, where each microservice is designed to be independently deployable and scalable. The system employs reactive programming with Spring WebFlux to handle asynchronous and non-blocking I/O operations efficiently.
 
 ![Logo](booklibrary-architecture.png)
+
+In the Book Library application, robust communication and real-time event handling are prioritized through the strategic integration of WebClient resilience and Kafka messaging.
+
+### WebClient Resilience
+Book Library utilizes WebClient not only for managing incoming requests and routing them to appropriate microservices but also for ensuring resilience in communication with external APIs or services. Leveraging WebClient's non-blocking, reactive approach to HTTP requests, the application fortifies itself against potential failures by implementing robust error handling, including timeouts, retries, and circuit breakers. This proactive strategy ensures that Book Library can gracefully handle unexpected scenarios and maintain optimal performance, resilience, and responsiveness in its interactions with external systems.
+
+### Kafka Integration for Voting Authors
+Book Library seamlessly integrates with Kafka to facilitate real-time processing of voting for authors across the microservices ecosystem. Kafka serves as a distributed streaming platform, enabling seamless communication between microservices and providing reliable, scalable, and fault-tolerant messaging. By leveraging Kafka's publish-subscribe model, Book Library efficiently handles voting events, ensuring that updates regarding author ratings and popularity are promptly propagated throughout the system. This integration enhances the overall voting experience for users and enables Book Library to effectively capture and respond to user preferences in real-time, fostering a dynamic and engaging user experience.
+
 
 ## Features
 
