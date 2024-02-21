@@ -4,21 +4,59 @@
 
 This repository contains a sample implementation of a book library system built using Spring Cloud microservices architecture. The project is divided into several microservices, each responsible for specific functionalities such as managing books, authors, comments, user authentication, and more.
 
-## Features
-
-- **Book Management**: Allows users to perform CRUD operations on books, view detailed information such as title, author, genre, publication date, and ratings, and interact with comments.
-- **Author Management**: Provides author profiles, including biographical information, authored books, and statistics. Users can search for authors and explore their data.
-- **Comment Management**: Manages user comments on books, including fetching by book or user ID, counting by user ID, and sorting by popularity or recency. Users can post, reply, and engage in discussions.
-- **User Authentication**: Implements secure user registration, authentication via username/password, and JWT-based token authentication.
-- **Genre Management**: Facilitates book exploration by browsing genres, viewing popular books, and discovering new ones.
-- **Gateway Server**: Central entry point routing requests to microservices, providing a unified interface for clients.
-- **Service Discovery**: Uses Eureka server for service registration and discovery, ensuring seamless communication between microservices.
-
 ## Architecture
 
 The architecture of the system follows the principles of microservices, where each microservice is designed to be independently deployable and scalable. The system employs reactive programming with Spring WebFlux to handle asynchronous and non-blocking I/O operations efficiently.
 
 ![Logo](booklibrary-architecture.png)
+
+## Features
+
+- **Book Management**: Allows users to perform operations on books, view detailed information such as title, author, genre, publication date, and ratings, and interact with comments.
+
+  | Method | Path                          | Description                                                            |
+  |--------|-------------------------------|------------------------------------------------------------------------|
+  | GET    | /api/v1/books/user/{id}/count | Get the count of books voted by a specific user                        |
+  | GET    | /api/v1/books                 | Get all books, optionally sorted by rating or creation date            |
+  | GET    | /api/v1/books?genre           | Get all books by genre, optionally sorted by rating or creation date   |
+  | GET    | /api/v1/books/{id}            | Get a specific book with author information and comments               |
+  | GET    | /api/v1/books?author          | Get all books by author, optionally sorted by rating or creation date  |
+  | GET    | /api/v1/books?user            | Get all books by user, optionally sorted by positive or negative votes |
+
+- **Author Management**: Provides author profiles, including biographical information, authored books, and statistics. Users can search for authors and explore their data.
+
+  | Method | Path                            | Description                                            |
+  |--------|---------------------------------|--------------------------------------------------------|
+  | GET    | /api/v1/authors/user/{id}/count | Get the count of users who voted for a specific author |
+  | GET    | /api/v1/authors/{id}            | Get a specific author                                  |
+  | GET    | /api/v1/authors/user/{id}       | Get all authors voted by a specific user               |
+
+- **Comment Management**: Manages user comments on books, including fetching by book or user ID, counting by user ID, and sorting by popularity or recency. Users can post, reply, and engage in discussions.
+
+  | Method | Path                             | Description                                                            |
+  |--------|----------------------------------|------------------------------------------------------------------------|
+  | GET    | /api/v1/comments/user/{id}/count | Get the count of comments made by a specific user                      |
+  | GET    | /api/v1/comments/book/{id}       | Get all comments for a specific book, sorted by creation date          |
+  | GET    | /api/v1/comments/user/{id}       | Get all comments made by a specific user, with associated book details |
+
+- **User Authentication**: Implements secure user registration, authentication via username/password, and JWT-based token authentication.
+
+  | Method | Path                  | Description                                        |
+  |--------|-----------------------|----------------------------------------------------|
+  | POST   | /api/v1/auth/signup   | Sign up a new user                                 |
+  | POST   | /api/v1/auth/signin   | Sign in a user                                     |
+  | POST   | /api/v1/auth/validate | Validate a token                                   |
+  | GET    | /api/v1/user/my       | Get account information for the authenticated user |
+  | GET    | /api/v1/user/{id}     | Get information for a specific user                |
+
+- **Genre Management**: Facilitates book exploration by browsing genres, viewing popular books, and discovering new ones.
+
+  | Method | Path           | Description                                       |
+  |--------|----------------|---------------------------------------------------|
+  | GET    | /api/v1/genres | Get all genres, sorted by name in ascending order |
+
+- **Gateway Server**: Central entry point routing requests to microservices, providing a unified interface for clients. To access the Gateway Server, use the following URL: `http://localhost:8080`
+- **Service Discovery**: Uses Eureka server for service registration and discovery, ensuring seamless communication between microservices.
 
 ## Setup Instructions
 
@@ -27,6 +65,7 @@ The architecture of the system follows the principles of microservices, where ea
 3. **Run Eureka Server**: Start the Eureka server by running the `EurekaDiscoveryServerApplication` class.
 4. **Run Microservices**: Start each microservice individually, ensuring that they register themselves with the Eureka server.
 5. **Access Gateway Server**: Once all microservices are running, access the gateway server to interact with the system's functionalities.
+
 
 ### Using the booklibrary-microservices.http file for requests
 
