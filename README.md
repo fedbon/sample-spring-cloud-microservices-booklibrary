@@ -4,7 +4,7 @@
 
 This repository contains a sample implementation of the Book Library system built using Spring Cloud microservices architecture. The project is divided into several microservices, each responsible for specific functionalities such as managing books, authors, comments, user authentication, and more.
 
-## Architecture
+## Infrastructure
 
 The architecture of the system follows the principles of microservices, where each microservice is designed to be independently deployable and scalable. The system employs reactive programming with Spring WebFlux to handle asynchronous and non-blocking I/O operations efficiently.
 
@@ -18,9 +18,15 @@ Book Library utilizes WebClient along with Resilience4j for managing incoming re
 ### Kafka Integration for Voting Authors
 Book Library seamlessly integrates with Kafka to facilitate real-time processing of voting for authors across the microservices ecosystem. Kafka serves as a distributed streaming platform, enabling seamless communication between microservices and providing reliable, scalable, and fault-tolerant messaging. By leveraging Kafka's publish-subscribe model, Book Library efficiently handles voting events, ensuring that updates regarding author ratings and popularity are promptly propagated throughout the system. This integration enhances the overall voting experience for users and enables Book Library to effectively capture and respond to user preferences in real-time, fostering a dynamic and engaging user experience.
 
-## Features
+### Gateway Server
+Central entry point routing requests to microservices, providing a unified interface for clients. To access the Gateway Server, use the following URL: `http://localhost:8080`
 
-- **Book Management**: Allows users to perform operations on books, view detailed information such as title, author, genre, publication date, and ratings, and interact with comments.
+### Eureka Discovery Server
+Uses Eureka server for service registration and discovery, ensuring seamless communication between microservices.
+
+## Functional Services
+
+- **Book Service**: Allows users to perform operations on books, view detailed information such as title, author, genre, publication date, and ratings, and interact with comments.
 
   | Method | Path                          | Description                                                            |
   |--------|-------------------------------|------------------------------------------------------------------------|
@@ -30,8 +36,9 @@ Book Library seamlessly integrates with Kafka to facilitate real-time processing
   | GET    | /api/v1/books/{id}            | Get a specific book with author information and comments               |
   | GET    | /api/v1/books?author          | Get all books by author, optionally sorted by rating or creation date  |
   | GET    | /api/v1/books?user            | Get all books by user, optionally sorted by positive or negative votes |
+  | GET    | /api/v1/genres                | Get all genres, sorted by name in ascending order                      |
 
-- **Author Management**: Provides author profiles, including biographical information, authored books, and statistics. Users can search for authors and explore their data.
+- **Author Service**: Provides author profiles, including biographical information, authored books, and statistics. Users can search for authors and explore their data.
 
   | Method | Path                            | Description                                            |
   |--------|---------------------------------|--------------------------------------------------------|
@@ -39,7 +46,7 @@ Book Library seamlessly integrates with Kafka to facilitate real-time processing
   | GET    | /api/v1/authors/{id}            | Get a specific author                                  |
   | GET    | /api/v1/authors/user/{id}       | Get all authors voted by a specific user               |
 
-- **Comment Management**: Manages user comments on books, including fetching by book or user ID, counting by user ID, and sorting by popularity or recency. Users can post, reply, and engage in discussions.
+- **Comment Service**: Manages user comments on books, including fetching by book or user ID, counting by user ID, and sorting by popularity or recency. Users can post, reply, and engage in discussions.
 
   | Method | Path                             | Description                                                            |
   |--------|----------------------------------|------------------------------------------------------------------------|
@@ -47,7 +54,7 @@ Book Library seamlessly integrates with Kafka to facilitate real-time processing
   | GET    | /api/v1/comments/book/{id}       | Get all comments for a specific book, sorted by creation date          |
   | GET    | /api/v1/comments/user/{id}       | Get all comments made by a specific user, with associated book details |
 
-- **User Authentication**: Implements secure user registration, authentication via username/password, and JWT-based token authentication.
+- **User Server**: Implements secure user registration, authentication via username/password, and JWT-based token authentication.
 
   | Method | Path                  | Description                                        |
   |--------|-----------------------|----------------------------------------------------|
@@ -56,15 +63,6 @@ Book Library seamlessly integrates with Kafka to facilitate real-time processing
   | POST   | /api/v1/auth/validate | Validate a token                                   |
   | GET    | /api/v1/user/my       | Get account information for the authenticated user |
   | GET    | /api/v1/user/{id}     | Get information for a specific user                |
-
-- **Genre Management**: Facilitates book exploration by browsing genres, viewing popular books, and discovering new ones.
-
-  | Method | Path           | Description                                       |
-  |--------|----------------|---------------------------------------------------|
-  | GET    | /api/v1/genres | Get all genres, sorted by name in ascending order |
-
-- **Gateway Server**: Central entry point routing requests to microservices, providing a unified interface for clients. To access the Gateway Server, use the following URL: `http://localhost:8080`
-- **Service Discovery**: Uses Eureka server for service registration and discovery, ensuring seamless communication between microservices.
 
 ## Setup Instructions
 
