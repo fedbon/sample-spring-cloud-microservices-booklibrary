@@ -6,7 +6,7 @@ This repository contains a sample implementation of the Book Library system buil
 
 ## Infrastructure
 
-The architecture of the system follows the principles of microservices, where each microservice is designed to be independently deployable and scalable. The system employs reactive programming with Spring WebFlux to handle asynchronous and non-blocking I/O operations efficiently.
+The Infrastructure of the system follows the principles of microservices, where each microservice is designed to be independently deployable and scalable. The system employs reactive programming with Spring WebFlux to handle asynchronous and non-blocking I/O operations efficiently.
 
 ![Logo](booklibrary-architecture.png)
 
