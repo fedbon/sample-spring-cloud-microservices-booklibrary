@@ -3,7 +3,7 @@ POST http://localhost:8080/api/v1/auth/signup
 Content-Type: application/json
 
 {
-  "username": "max_payne2",
+  "username": "max_payne",
   "password": "12345",
   "first_name": "Max",
   "last_name": "Payne"
@@ -14,7 +14,7 @@ POST http://localhost:8080/api/v1/auth/signin
 Content-Type: application/json
 
 {
-  "username": "max_payne2",
+  "username": "max_payne",
   "password": "12345"
 }
 
@@ -29,7 +29,12 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 ###GET USER INFORMATION BY ID
-GET http://localhost:8080/api/v1/user/65ccfd292e9b5a720d7ceff6
+GET http://localhost:8080/api/v1/user/65d747757791cb06a62800b6
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET BOOK BY ID
+GET http://localhost:8080/api/v1/books/1
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
@@ -38,18 +43,13 @@ GET http://localhost:8080/api/v1/books
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
-###ORDER BOOKS BY CREATEDAT FIELD IN ASCENDENT ORDER
+###ORDER BOOKS BY CREATED AT FIELD IN ASCENDENT ORDER
 GET http://localhost:8080/api/v1/books?order=createdAt&desc=false
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 ###ORDER BOOKS BY RATING FIELD IN ASCENDENT ORDER
 GET http://localhost:8080/api/v1/books?order=rating&desc=false
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
-
-###GET BOOK BY ID
-GET http://localhost:8080/api/v1/books/1
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
@@ -64,12 +64,17 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 ###GET ALL BOOKS VOTED BY USER ID
-GET http://localhost:8080/api/v1/books?user=2
+GET http://localhost:8080/api/v1/books?user=1
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
-###GET ALL BOOKS WITH NEGATIVE VOTES BY USER ID
-GET http://localhost:8080/api/v1/books?user=2&sort=negative
+###GET ONLY BOOKS WITH POSITIVE VOTES BY USER ID
+GET http://localhost:8080/api/v1/books?user=1&sort=positive
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET ONLY BOOKS WITH NEGATIVE VOTES BY USER ID
+GET http://localhost:8080/api/v1/books?user=1&sort=negative
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 

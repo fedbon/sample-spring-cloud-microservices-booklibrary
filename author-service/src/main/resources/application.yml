@@ -1,6 +1,11 @@
 server:
   port: 9876
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
 spring:
   data:
     mongodb:
@@ -14,7 +19,7 @@ spring:
     import: optional:configserver:${CONFIG_SERVER_URI:http://localhost:8888}
   kafka:
     consumer:
-      bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP-SERVERS:localhost:9092}
+      bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
       group-id: authorGroup
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer

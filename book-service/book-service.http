@@ -1,4 +1,4 @@
-GET http://localhost:8765/api/v1/books/2
+GET http://localhost:8765/api/v1/books/1
 Content-Type: application/json
 
 ###

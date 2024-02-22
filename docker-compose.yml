@@ -3,13 +3,38 @@ services:
   config-server:
     build:
       context: ./config-server
+    restart: always
     ports:
       - 8888:8888
     networks:
       - backend
 
+  prometheus: ### to connect in grafana use http://host.docker.internal:9090
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      monitoring:
+        aliases:
+          - prometheus
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      monitoring:
+        aliases:
+          - grafana
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    restart: always
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -21,6 +46,7 @@ services:
     hostname: broker
     ports:
       - 9092:9092
+    restart: always
     depends_on:
       - zookeeper
     environment:
@@ -39,9 +65,7 @@ services:
       context: ./eureka-discovery-server
     ports:
       - 8761:8761
-    depends_on:
-      - config-server
-    restart: on-failure
+    restart: always
     environment:
       CONFIG_SERVER_URI: http://config-server:8888
     networks:
@@ -54,12 +78,13 @@ services:
       - 8080:8080
     depends_on:
       - eureka-discovery-server
+      - config-server
     networks:
       - backend
     environment:
       EUREKA_URI: http://eureka-discovery-server:8761/eureka
       CONFIG_SERVER_URI: http://config-server:8888
-    restart: on-failure
+    restart: always
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 10s
@@ -111,7 +136,7 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://author-mongodb:27017/author-mongodb
       EUREKA_URI: http://eureka-discovery-server:8761/eureka
       CONFIG_SERVER_URI: http://config-server:8888
-      SPRING_KAFKA_BOOTSTRAP-SERVERS: broker:29092
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: broker:29092
   author-mongodb:
     image: mongo:latest
     ports:
@@ -169,7 +194,6 @@ services:
     ports:
       - 30005:27017
     networks:
-      - backend
       - mongo-comments
     restart: always
     command: mongod --bind_ip_all
@@ -210,3 +234,4 @@ networks:
   mongo-books:
   mongo-comments:
   mongo-votes:
+  monitoring:

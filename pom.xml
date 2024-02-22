@@ -57,6 +57,10 @@
 
         <jjwt.version>0.12.4</jjwt.version>
 
+        <json-path.version>2.9.0</json-path.version>
+
+        <google-guava.version>33.0.0-jre</google-guava.version>
+
     </properties>
 
 </project>

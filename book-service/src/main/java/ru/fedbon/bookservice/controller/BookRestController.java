@@ -89,36 +89,12 @@ public class BookRestController {
     @GetMapping(params = "user")
     public Flux<BookWithAuthorInfoAndCommentsDto> handleGetAllByUserId(
             @RequestParam(name = "user") String userId,
-            @RequestParam(name = "sort", defaultValue = "positive") String sort) {
+            @RequestParam(name = "sort", required = false) String sort) {
         return bookRepository.findAll()
                 .filter(book -> shouldIncludeBook(book, userId, sort))
                 .flatMap(book -> enrichBookWithAuthorInfoAndComments(bookMapper
                         .mapToBookWithAuthorsAndCommentsDto(book)))
-                .sort(this::compareBooksByRating);
-    }
-
-    private boolean shouldIncludeBook(Book book, String userId, String sort) {
-        if ("positive".equalsIgnoreCase(sort)) {
-            return hasPositiveVoteByUser(book, userId);
-        } else if ("negative".equalsIgnoreCase(sort)) {
-            return hasNegativeVoteByUser(book, userId);
-        }
-        return false;
-    }
-
-    private boolean hasPositiveVoteByUser(Book book, String userId) {
-        return book.getVoteByUserList().stream()
-                .anyMatch(vote -> vote.getUserId().equals(userId) && vote.isPositive());
-    }
-
-    private boolean hasNegativeVoteByUser(Book book, String userId) {
-        return book.getVoteByUserList().stream()
-                .anyMatch(vote -> vote.getUserId().equals(userId) && !vote.isPositive());
-    }
-
-    private int compareBooksByRating(BookWithAuthorInfoAndCommentsDto bookDto1,
-                                     BookWithAuthorInfoAndCommentsDto bookDto2) {
-        return Double.compare(bookDto2.getRating(), bookDto1.getRating());
+                .sort((book1, book2) -> compareBooksByRatingAndVote(book1, book2, sort));
     }
 
     private Mono<BookWithAuthorInfoDto> enrichBookWithAuthorInfo(Book book) {
@@ -171,6 +147,30 @@ public class BookRestController {
                                 "Comments information not available", null, null,
                                 null, null, null))))
                 .doOnNext(commentDto -> log.info("Received comment: {}", commentDto));
+    }
+
+    private boolean shouldIncludeBook(Book book, String userId, String sort) {
+        boolean hasUserVote = book.getVoteByUserList().stream()
+                .anyMatch(vote -> vote.getUserId().equals(userId));
+        if (sort != null && sort.equalsIgnoreCase("positive")) {
+            return hasUserVote && book.getVoteByUserList().stream()
+                    .anyMatch(vote -> vote.getUserId().equals(userId) && vote.isPositive());
+        } else if (sort != null && sort.equalsIgnoreCase("negative")) {
+            return hasUserVote && book.getVoteByUserList().stream()
+                    .anyMatch(vote -> vote.getUserId().equals(userId) && !vote.isPositive());
+        } else {
+            return hasUserVote;
+        }
+    }
+
+    private int compareBooksByRatingAndVote(BookWithAuthorInfoAndCommentsDto bookDto1,
+                                            BookWithAuthorInfoAndCommentsDto bookDto2, String sort) {
+        int ratingComparison = Double.compare(bookDto2.getRating(), bookDto1.getRating());
+        if (ratingComparison != 0) {
+            return ratingComparison;
+        } else {
+            return compareBooksByVote(bookDto1, bookDto2, sort);
+        }
     }
 
     private int compareBooks(BookWithAuthorInfoDto bookDto1, BookWithAuthorInfoDto bookDto2,
