@@ -49,7 +49,7 @@ Provides author profiles, including biographical information and statistics. Use
   | GET    | /api/v1/authors/user/{id}       | Get all authors voted by a specific user               |
 
 ### Comment Service
-Manages user comments on books, including fetching by book or user ID, counting by user ID, and sorting by popularity or recency. Users can post, reply, and engage in discussions.
+Manages user comments on books, including fetching by book or user ID and counting by user ID.
 
   | Method | Path                             | Description                                                            |
   |--------|----------------------------------|------------------------------------------------------------------------|
@@ -87,9 +87,9 @@ Micrometer, a powerful library, has been integrated into the microservices archi
 
 ### Prometheus
 
-![Logo](prometheus-targets.png)
-
 The web interface of Prometheus, which is typically accessible at `http://localhost:9090` when running locally, provides a user-friendly way to explore collected metrics, run queries, and manage alerting configurations.
+
+![Logo](prometheus-targets.png)
 
 - Collects time-series data through a pull-based model.
 - Offers a powerful querying language (PromQL) for analyzing metrics.
@@ -97,9 +97,9 @@ The web interface of Prometheus, which is typically accessible at `http://localh
 
 ### Grafana
 
-![Logo](grafana-metrics.png)
-
 Accessing the Grafana dashboard at `http://localhost:3000` with the provided credentials (username: admin, password: admin) allows to log in and start exploring the metrics and visualizations configured within Grafana.
+
+![Logo](grafana-metrics.png)
 
 - Visualizes time-series data with customizable dashboards and graphs.
 - Supports various data sources including Prometheus
