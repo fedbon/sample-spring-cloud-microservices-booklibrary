@@ -79,6 +79,8 @@ Manages votes from users for authors. It encompasses functionalities for receivi
 
 ### Micrometer
 
+Micrometer, a powerful library, has been integrated into the microservices architecture to facilitate the collection of application-level metrics. Micrometer dependencies have been incorporated into the microservices to enable metric tracking
+
 - Provides a simple API for capturing application-level metrics.
 - Supports various metric types like counters, gauges, timers, and histograms.
 - Integrates seamlessly with monitoring system Prometheus.
