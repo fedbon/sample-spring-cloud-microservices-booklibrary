@@ -68,7 +68,7 @@ Implements secure user registration, authentication via username/password, and J
   | GET    | /api/v1/user/my       | Get account information for the authenticated user |
   | GET    | /api/v1/user/{id}     | Get information for a specific user                |
 
-## Metrics and Monitoring with Micrometer, Grafana, and Prometheus
+## Metrics and Monitoring
 
 ### Micrometer
 
