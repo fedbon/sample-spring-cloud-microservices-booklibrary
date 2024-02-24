@@ -40,7 +40,7 @@ Allows users to perform operations on books, view detailed information such as t
   | GET    | /api/v1/genres                | Get all genres, sorted by name in ascending order                      |
 
 ### Author Service
-Provides author profiles, including biographical information and statistics. Users can search for authors and explore their data.
+Provides author profiles, including biographical information and statistics. Users can search for authors and explore their data. This service class consumes messages from the Kafka topic related to author votes. It processes these messages, updates the corresponding author's information based on the received vote, and persists the changes.
 
   | Method | Path                            | Description                                            |
   |--------|---------------------------------|--------------------------------------------------------|
@@ -67,6 +67,13 @@ Implements secure user registration, authentication via username/password, and J
   | POST   | /api/v1/auth/validate | Validate a token                                   |
   | GET    | /api/v1/user/my       | Get account information for the authenticated user |
   | GET    | /api/v1/user/{id}     | Get information for a specific user                |
+
+### Vote Service
+Manages votes from users for authors. It encompasses functionalities for receiving, handling, and processing votes initiated by users through RESTful APIs. Additionally, it includes the capability to send messages related to author votes to a Kafka topic using a reactive Kafka producer.
+
+| Method | Path                  | Description     |
+|--------|-----------------------|-----------------|
+| POST   | /api/v1/vote/author   | Vote for author |
 
 ## Metrics and Monitoring
 

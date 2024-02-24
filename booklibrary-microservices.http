@@ -139,7 +139,7 @@ Authorization: Bearer {{auth_token1}}
 Content-Type: application/json
 
 ###GET AUTHOR BY ID
-GET http://localhost:8080/api/v1/authors/1
+GET http://localhost:8080/api/v1/authors/3
 Authorization: Bearer {{auth_token1}}
 Content-Type: application/json
 
@@ -149,7 +149,7 @@ Authorization: Bearer {{auth_token1}}
 Content-Type: application/json
 
 {
-  "authorId": "1",
+  "authorId": "3",
   "isEnabled": true
 }
 
@@ -159,7 +159,7 @@ Authorization: Bearer {{auth_token2}}
 Content-Type: application/json
 
 {
-  "authorId": "1",
+  "authorId": "3",
   "isEnabled": true
 }
 
@@ -169,6 +169,6 @@ Authorization: Bearer {{auth_token3}}
 Content-Type: application/json
 
 {
-  "authorId": "1",
+  "authorId": "3",
   "isEnabled": true
 }
