@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.2</version>
+    </parent>
+
+    <groupId>ru.fedbon</groupId>
+    <artifactId>sample-spring-cloud-microservices-booklibrary</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>book-service</module>
+        <module>config-server</module>
+        <module>author-service</module>
+        <module>comment-service</module>
+        <module>vote-service</module>
+        <module>user-server</module>
+        <module>eureka-discovery-server</module>
+        <module>gateway-server</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <spring-cloud-starter-netflix.version>4.1.1</spring-cloud-starter-netflix.version>
+
+        <mongock-spring.version>4.3.8</mongock-spring.version>
+        <flapdoodle.version>4.12.2</flapdoodle.version>
+        <flapdoodle.embed.mongo.spring30x.version>4.11.0</flapdoodle.embed.mongo.spring30x.version>
+
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+
+        <lombok.version>1.18.30</lombok.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+
+        <reactor-resilience4j.version>3.1.0</reactor-resilience4j.version>
+
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
+        <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
+
+        <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
+        <checkstyle.version>10.13.0</checkstyle.version>
+        <checkstyle.config.url>
+            https://raw.githubusercontent.com/OtusTeam/Spring/master/checkstyle.xml
+        </checkstyle.config.url>
+
+        <reactor.kafka.version>1.3.22</reactor.kafka.version>
+
+        <jjwt.version>0.12.4</jjwt.version>
+
+        <json-path.version>2.9.0</json-path.version>
+
+        <google-guava.version>33.0.0-jre</google-guava.version>
+
+        <apache-commons.version>1.26.0</apache-commons.version>
+
+        <ru.fedbon.commons.version>1.0</ru.fedbon.commons.version>
+
+    </properties>
+
+</project>

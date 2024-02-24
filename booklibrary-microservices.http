@@ -1,0 +1,174 @@
+###REGISTER (USER 1)
+POST http://localhost:8080/api/v1/auth/signup
+Content-Type: application/json
+
+{
+  "username": "max_payne",
+  "password": "123",
+  "first_name": "Max",
+  "last_name": "Payne"
+}
+
+###REGISTER (USER 2)
+POST http://localhost:8080/api/v1/auth/signup
+Content-Type: application/json
+
+{
+  "username": "john_shepard",
+  "password": "123",
+  "first_name": "John",
+  "last_name": "Shepard"
+}
+
+###REGISTER (USER 3)
+POST http://localhost:8080/api/v1/auth/signup
+Content-Type: application/json
+
+{
+  "username": "gordon_freeman",
+  "password": "123",
+  "first_name": "Gordon",
+  "last_name": "Freeman"
+}
+
+###LOG IN (USER 1)
+POST http://localhost:8080/api/v1/auth/signin
+Content-Type: application/json
+
+{
+  "username": "max_payne",
+  "password": "123"
+}
+
+###LOG IN (USER 2)
+POST http://localhost:8080/api/v1/auth/signin
+Content-Type: application/json
+
+{
+  "username": "john_shepard",
+  "password": "123"
+}
+
+###LOG IN (USER 3)
+POST http://localhost:8080/api/v1/auth/signin
+Content-Type: application/json
+
+{
+  "username": "gordon_freeman",
+  "password": "123"
+}
+
+###VALIDATE TOKEN
+POST http://localhost:8080/api/v1/auth/validate?token={{auth_token1}}
+#Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###GET MY ACCOUNT INFORMATION
+GET http://localhost:8080/api/v1/user/my
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET USER INFORMATION BY ID
+GET http://localhost:8080/api/v1/user/65d747757791cb06a62800b6
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET BOOK BY ID
+GET http://localhost:8080/api/v1/books/1
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET ALL BOOKS
+GET http://localhost:8080/api/v1/books
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###ORDER BOOKS BY CREATED AT FIELD IN ASCENDENT ORDER
+GET http://localhost:8080/api/v1/books?order=createdAt&desc=false
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###ORDER BOOKS BY RATING FIELD IN ASCENDENT ORDER
+GET http://localhost:8080/api/v1/books?order=rating&desc=false
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET ALL BOOKS BY GENRE ID
+GET http://localhost:8080/api/v1/books?genre=1
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET ALL BOOKS BY AUTHOR ID
+GET http://localhost:8080/api/v1/books?author=2
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET ALL BOOKS VOTED BY USER ID
+GET http://localhost:8080/api/v1/books?user=5
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET ONLY BOOKS WITH POSITIVE VOTES BY USER ID
+GET http://localhost:8080/api/v1/books?user=5&filter=positive
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET ONLY BOOKS WITH NEGATIVE VOTES BY USER ID
+GET http://localhost:8080/api/v1/books?user=5&filter=negative
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET ALL GENRES
+GET http://localhost:8080/api/v1/genres
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET ALL COMMENTS BY USER ID
+GET http://localhost:8080/api/v1/comments/user/1
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET ALL COMMENTS BY BOOK ID
+GET http://localhost:8080/api/v1/comments/book/1
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET AUTHOR VOTED BY USER ID
+GET http://localhost:8080/api/v1/authors/user/1
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###GET AUTHOR BY ID
+GET http://localhost:8080/api/v1/authors/1
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+###VOTE BY AUTHOR ID (USER 1)
+POST http://localhost:8080/api/v1/vote/author
+Authorization: Bearer {{auth_token1}}
+Content-Type: application/json
+
+{
+  "authorId": "1",
+  "isEnabled": true
+}
+
+###VOTE BY AUTHOR ID (USER 2)
+POST http://localhost:8080/api/v1/vote/author
+Authorization: Bearer {{auth_token2}}
+Content-Type: application/json
+
+{
+  "authorId": "1",
+  "isEnabled": true
+}
+
+###VOTE BY AUTHOR ID (USER 3)
+POST http://localhost:8080/api/v1/vote/author
+Authorization: Bearer {{auth_token3}}
+Content-Type: application/json
+
+{
+  "authorId": "1",
+  "isEnabled": true
+}

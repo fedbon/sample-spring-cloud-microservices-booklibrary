@@ -1,0 +1,237 @@
+services:
+
+  config-server:
+    build:
+      context: ./config-server
+    restart: always
+    ports:
+      - 8888:8888
+    networks:
+      - backend
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - backend
+
+  broker:
+    image: confluentinc/cp-kafka:latest
+    hostname: broker
+    ports:
+      - 9092:9092
+    restart: always
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - backend
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      monitoring:
+        aliases:
+          - prometheus
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      monitoring:
+        aliases:
+          - grafana
+
+  eureka-discovery-server:
+    build:
+      context: ./eureka-discovery-server
+    ports:
+      - 8761:8761
+    restart: always
+    environment:
+      CONFIG_SERVER_URI: http://config-server:8888
+    networks:
+      - backend
+
+  gateway-server:
+    build:
+      context: ./gateway-server
+    ports:
+      - 8080:8080
+    depends_on:
+      - eureka-discovery-server
+      - config-server
+    networks:
+      - backend
+    environment:
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
+    restart: always
+    healthcheck:
+      test: curl -f http://localhost:8080/actuator/prometheus || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  user-server:
+    build:
+      context: ./user-server
+    ports:
+      - 8083:8083
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+      - config-server
+      - user-mongodb
+    networks:
+      - backend
+      - mongo-users
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://user-mongodb:27017/user-mongodb
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
+  user-mongodb:
+    image: mongo:latest
+    ports:
+      - 30002:27017
+    restart: always
+    networks:
+      - mongo-users
+    command: mongod --bind_ip_all
+
+  author-service:
+    build:
+      context: ./author-service
+    ports:
+      - 9876:9876
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+      - config-server
+      - author-mongodb
+      - broker
+      - zookeeper
+    networks:
+      - backend
+      - mongo-authors
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://author-mongodb:27017/author-mongodb
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: broker:29092
+  author-mongodb:
+    image: mongo:latest
+    ports:
+      - 30004:27017
+    networks:
+      - mongo-authors
+    restart: always
+    command: mongod --bind_ip_all
+
+  book-service:
+    build:
+      context: ./book-service
+    ports:
+      - 8765:8765
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+      - config-server
+      - book-mongodb
+    networks:
+      - backend
+      - mongo-books
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://book-mongodb:27017/book-mongodb
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
+  book-mongodb:
+    image: mongo:latest
+    ports:
+      - 30003:27017
+    restart: always
+    networks:
+      - mongo-books
+    command: mongod --bind_ip_all
+
+  comment-service:
+    build:
+      context: ./comment-service
+    ports:
+      - 9877:9877
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+      - config-server
+      - comment-mongodb
+    networks:
+      - backend
+      - mongo-comments
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://comment-mongodb:27017/comment-mongodb
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
+  comment-mongodb:
+    image: mongo:latest
+    ports:
+      - 30005:27017
+    networks:
+      - mongo-comments
+    restart: always
+    command: mongod --bind_ip_all
+
+  vote-service:
+    build:
+      context: ./vote-service
+    ports:
+      - 9885:9885
+    restart: always
+    depends_on:
+      - eureka-discovery-server
+      - config-server
+      - vote-mongodb
+      - broker
+      - zookeeper
+    networks:
+      - backend
+      - mongo-votes
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://vote-mongodb:27017/vote-mongodb
+      EUREKA_URI: http://eureka-discovery-server:8761/eureka
+      CONFIG_SERVER_URI: http://config-server:8888
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: broker:29092
+  vote-mongodb:
+    image: mongo:latest
+    ports:
+      - 30006:27017
+    networks:
+      - mongo-votes
+    restart: always
+    command: mongod --bind_ip_all
+
+networks:
+  backend:
+  mongo-users:
+  mongo-authors:
+  mongo-books:
+  mongo-comments:
+  mongo-votes:
+  monitoring:

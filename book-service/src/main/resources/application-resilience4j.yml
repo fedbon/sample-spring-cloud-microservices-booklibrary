@@ -1,0 +1,62 @@
+resilience4j:
+  circuitbreaker:
+    metrics:
+      enabled: true
+    circuit-breaker-aspect-order: 1
+    configs:
+      default:
+        register-health-indicator: true
+        sliding-window-type: count-based
+        sliding-window-size: 5
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 60
+        failure-rate-threshold: 60
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+
+    instances:
+      randomQuoteApi:
+        baseConfig: default
+
+  retry:
+    metrics:
+      enabled: true
+    retry-aspect-order: 2
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 5s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        #wait-duration * (exponential-backoff-multiplier ^ (retry count)), retry count = 0, 1, 2,...
+        retry-exceptions:
+          - ru.fedbon.bookservice.exception.RandomQuoteApiException
+        ignore-exceptions:
+        #- ru.otus.webapp.exceptions.RandomQuoteApiIgnoredException
+
+    instances:
+      randomQuoteApi:
+        baseConfig: default
+
+  ratelimiter:
+    metrics:
+      enabled: true
+    configs:
+      default:
+        limit-for-period: 1 # Количество разрешенных вызовов за период
+        limit-refresh-period: 10s # Период
+        timeout-duration: 0ms # Ожидание получения права на вызов
+    instances:
+      randomQuoteApi:
+        baseConfig: default
+
+  bulkhead:
+    metrics:
+      enabled: true
+    configs:
+      default:
+        max-concurrent-calls: 2
+        max-wait-duration: 0s # Ожидание освобождения закрытой переборки
+    instances:
+      randomQuoteApi:
+        baseConfig: default
