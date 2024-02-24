@@ -24,14 +24,6 @@ Book Library seamlessly integrates with Kafka to facilitate real-time processing
 ### Gateway Server
 Central entry point routing requests to microservices, providing a unified interface for clients. Once all microservices are running, access the gateway server at `http://localhost:8080` to interact with the system's functionalities.
 
-### Prometheus
-The web interface of Prometheus, which is typically accessible at `http://localhost:9090` when running locally, provides a user-friendly way to explore collected metrics, run queries, and manage alerting configurations.
-
-### Grafana
-Accessing the Grafana dashboard at `http://localhost:3000` with the provided credentials (username: admin, password: admin) allows to log in and start exploring the metrics and visualizations configured within Grafana.
-
-**Note**: To connect Grafana with Prometheus, use `http://host.docker.internal:9090` as the data source URL.
-
 ## Functional Services
 
 ### Book Service
@@ -88,6 +80,8 @@ Implements secure user registration, authentication via username/password, and J
 
 ![Logo](prometheus-targets.png)
 
+The web interface of Prometheus, which is typically accessible at `http://localhost:9090` when running locally, provides a user-friendly way to explore collected metrics, run queries, and manage alerting configurations.
+
 - Collects time-series data through a pull-based model.
 - Offers a powerful querying language (PromQL) for analyzing metrics.
 - Automatically discovers targets and supports a multi-dimensional data model.
@@ -96,9 +90,13 @@ Implements secure user registration, authentication via username/password, and J
 
 ![Logo](grafana-metrics.png)
 
+Accessing the Grafana dashboard at `http://localhost:3000` with the provided credentials (username: admin, password: admin) allows to log in and start exploring the metrics and visualizations configured within Grafana.
+
 - Visualizes time-series data with customizable dashboards and graphs.
 - Supports various data sources including Prometheus
 - Provides alerting capabilities for setting up notifications based on predefined thresholds.
+
+**Note**: To connect Grafana with Prometheus, use `http://host.docker.internal:9090` as the data source URL.
 
 ## Setup Instructions
 
