@@ -104,17 +104,17 @@ Authorization: Bearer {{auth_token1}}
 Content-Type: application/json
 
 ###GET ALL BOOKS VOTED BY USER ID
-GET http://localhost:8080/api/v1/books?user=5
+GET http://localhost:8080/api/v1/books?user=1
 Authorization: Bearer {{auth_token1}}
 Content-Type: application/json
 
 ###GET ONLY BOOKS WITH POSITIVE VOTES BY USER ID
-GET http://localhost:8080/api/v1/books?user=5&filter=positive
+GET http://localhost:8080/api/v1/books?user=1&filter=positive
 Authorization: Bearer {{auth_token1}}
 Content-Type: application/json
 
 ###GET ONLY BOOKS WITH NEGATIVE VOTES BY USER ID
-GET http://localhost:8080/api/v1/books?user=5&filter=negative
+GET http://localhost:8080/api/v1/books?user=1&filter=negative
 Authorization: Bearer {{auth_token1}}
 Content-Type: application/json
 
