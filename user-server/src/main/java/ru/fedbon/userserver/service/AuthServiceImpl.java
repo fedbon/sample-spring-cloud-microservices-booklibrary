@@ -25,6 +25,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static ru.fedbon.userserver.constants.AppConstants.ROLE;
+import static ru.fedbon.userserver.constants.AppConstants.USERNAME;
+import static ru.fedbon.userserver.constants.ErrorMessage.ACCOUNT_DISABLED;
+import static ru.fedbon.userserver.constants.ErrorMessage.PASSWORD_INVALID;
+import static ru.fedbon.userserver.constants.ErrorMessage.TOKEN_EXPIRED_WITH_MESSAGE;
+import static ru.fedbon.userserver.constants.ErrorMessage.TOKEN_INVALID;
+import static ru.fedbon.userserver.constants.ErrorMessage.TOKEN_INVALID_WITH_MESSAGE;
+import static ru.fedbon.userserver.constants.ErrorMessage.USERNAME_INVALID;
+import static ru.fedbon.userserver.constants.Message.USER_REGISTERED;
+
 
 @Slf4j
 @Component
@@ -54,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .build()
-        ).doOnSuccess(u -> log.info("IN registerUser - user: {} created", u));
+        ).doOnSuccess(u -> log.info(USER_REGISTERED, u));
     }
 
     @Override
@@ -62,18 +72,18 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.findByUsername(username)
                 .flatMap(user -> {
                     if (!user.isEnabled()) {
-                        return Mono.error(new InvalidCredentialsException("Account is disabled"));
+                        return Mono.error(new InvalidCredentialsException(ACCOUNT_DISABLED));
                     }
 
                     if (!passwordEncoder.matches(password, user.getPassword())) {
-                        return Mono.error(new InvalidCredentialsException("Invalid password"));
+                        return Mono.error(new InvalidCredentialsException(PASSWORD_INVALID));
                     }
 
                     return Mono.just(generateToken(user).toBuilder()
                             .userId(user.getId())
                             .build());
                 })
-                .switchIfEmpty(Mono.error(new InvalidCredentialsException("Invalid username")));
+                .switchIfEmpty(Mono.error(new InvalidCredentialsException(USERNAME_INVALID)));
     }
 
     @Override
@@ -91,31 +101,31 @@ public class AuthServiceImpl implements AuthService {
                             .username(user.getUsername())
                             .build());
         } catch (ExpiredJwtException e) {
-            log.warn("Expired token: {}", e.getMessage());
+            log.warn(TOKEN_EXPIRED_WITH_MESSAGE, e.getMessage());
             return Mono.error(e);
         } catch (JwtException e) {
-            log.error("Invalid token: {}", e.getMessage());
-            return Mono.error(new InvalidCredentialsException("Invalid token"));
+            log.error(TOKEN_INVALID_WITH_MESSAGE, e.getMessage());
+            return Mono.error(new InvalidCredentialsException(TOKEN_INVALID));
         }
     }
 
     private TokenDetailsVo generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-            claims.put("role", user.getRole());
-            claims.put("username", user.getUsername());
+            claims.put(ROLE, user.getRole());
+            claims.put(USERNAME, user.getUsername());
         return generateToken(claims, user.getId());
     }
 
     private TokenDetailsVo generateToken(Map<String, Object> claims, String subject) {
         long expirationTimeInMillis = expirationInSeconds * 1500L;
-        Date expirationDate = new Date(new Date().getTime() + expirationTimeInMillis);
+        var expirationDate = new Date(new Date().getTime() + expirationTimeInMillis);
 
         return generateToken(expirationDate, claims, subject);
     }
 
     private TokenDetailsVo generateToken(Date expirationDate, Map<String, Object> claims, String subject) {
-        Date createdDate = new Date();
-        String token = Jwts.builder()
+        var createdDate = new Date();
+        var token = Jwts.builder()
                 .claims(claims)
                 .issuer(issuer)
                 .subject(subject)
@@ -124,7 +134,6 @@ public class AuthServiceImpl implements AuthService {
                 .expiration(expirationDate)
                 .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret)))
                 .compact();
-
         return TokenDetailsVo.builder()
                 .token(token)
                 .issuedAt(createdDate)

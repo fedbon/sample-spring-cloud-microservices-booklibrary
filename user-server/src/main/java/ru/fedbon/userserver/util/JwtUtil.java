@@ -13,6 +13,9 @@ import reactor.core.publisher.Mono;
 
 import java.util.Date;
 
+import static ru.fedbon.userserver.constants.ErrorMessage.TOKEN_EXPIRED;
+import static ru.fedbon.userserver.constants.ErrorMessage.TOKEN_EXPIRED_WITH_MESSAGE;
+
 @Slf4j
 @RequiredArgsConstructor
 public class JwtUtil {
@@ -25,13 +28,13 @@ public class JwtUtil {
             Date expirationDate = claims.getExpiration();
 
             if (expirationDate != null && expirationDate.before(new Date())) {
-                log.warn("Expired token");
-                return Mono.error(new ExpiredJwtException(null, claims, "Token has expired"));
+                log.warn(TOKEN_EXPIRED);
+                return Mono.error(new ExpiredJwtException(null, claims, TOKEN_EXPIRED));
             } else {
                 return Mono.just(new VerificationResultVo(claims, accessToken));
             }
         } catch (ExpiredJwtException e) {
-            log.warn("Expired token: {}", e.getMessage());
+            log.warn(TOKEN_EXPIRED_WITH_MESSAGE, e.getMessage());
             return Mono.error(e);
         } catch (InvalidCredentialsException e) {
             return Mono.error(e);

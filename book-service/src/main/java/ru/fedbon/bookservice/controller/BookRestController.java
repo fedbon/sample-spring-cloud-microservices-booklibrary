@@ -20,11 +20,47 @@ import ru.fedbon.bookservice.mapper.BookMapper;
 import ru.fedbon.bookservice.model.Book;
 import ru.fedbon.bookservice.repository.BookRepository;
 
+import static ru.fedbon.bookservice.constants.AppConstants.CIRCUIT_BREAKER_AUTHOR_SERVICE;
+import static ru.fedbon.bookservice.constants.AppConstants.CIRCUIT_BREAKER_COMMENT_SERVICE;
+import static ru.fedbon.bookservice.constants.ErrorMessage.AUTHOR_INFORMATION_NOT_AVAILABLE_MESSAGE;
+import static ru.fedbon.bookservice.constants.ErrorMessage.BOOKS_NOT_FOUND;
+import static ru.fedbon.bookservice.constants.ErrorMessage.BOOK_NOT_FOUND;
+import static ru.fedbon.bookservice.constants.ErrorMessage.COMMENTS_INFORMATION_NOT_AVAILABLE_MESSAGE;
+import static ru.fedbon.bookservice.constants.Message.COUNT_VOTES_BY_BOOK_ID_MESSAGE;
+import static ru.fedbon.bookservice.constants.Message.ENRICHED_BOOK_WITH_AUTHOR_INFO;
+import static ru.fedbon.bookservice.constants.Message.ENRICHED_BOOK_WITH_AUTHOR_INFO_AND_COMMENTS;
+import static ru.fedbon.bookservice.constants.Message.RECEIVED_COMMENTS_MESSAGE;
+import static ru.fedbon.bookservice.constants.Message.SUCCESSFULLY_RECEIVED_AUTHOR_INFORMATION_MESSAGE;
+import static ru.fedbon.bookservice.constants.Message.SUCCESSFULLY_RETRIEVED_BOOKS_BY_AUTHOR_ID_MESSAGE;
+import static ru.fedbon.bookservice.constants.Message.SUCCESSFULLY_RETRIEVED_BOOKS_MESSAGE;
+import static ru.fedbon.bookservice.constants.Message.SUCCESSFULLY_RETRIEVED_BOOK_MESSAGE;
+import static ru.fedbon.bookservice.constants.PathConstants.API_V1_AUTHORS;
+import static ru.fedbon.bookservice.constants.PathConstants.API_V1_BOOKS;
+import static ru.fedbon.bookservice.constants.PathConstants.API_V1_COMMENTS;
+import static ru.fedbon.bookservice.constants.PathConstants.AUTHOR_ID;
+import static ru.fedbon.bookservice.constants.PathConstants.AUTHOR_PARAM;
+import static ru.fedbon.bookservice.constants.PathConstants.BOOK_ID;
+import static ru.fedbon.bookservice.constants.PathConstants.COMMENTS_BY_BOOK_ID;
+import static ru.fedbon.bookservice.constants.PathConstants.COUNT_VOTES_BY_BOOK_ID;
+import static ru.fedbon.bookservice.constants.PathConstants.CREATED_AT;
+import static ru.fedbon.bookservice.constants.PathConstants.DESC_PARAM;
+import static ru.fedbon.bookservice.constants.PathConstants.FILTER_PARAM;
+import static ru.fedbon.bookservice.constants.PathConstants.GENRE_PARAM;
+import static ru.fedbon.bookservice.constants.PathConstants.ID;
+import static ru.fedbon.bookservice.constants.PathConstants.NEGATIVE;
+import static ru.fedbon.bookservice.constants.PathConstants.ORDER_PARAM;
+import static ru.fedbon.bookservice.constants.PathConstants.POSITIVE;
+import static ru.fedbon.bookservice.constants.PathConstants.RATING_VALUE;
+import static ru.fedbon.bookservice.constants.PathConstants.TRUE_VALUE;
+import static ru.fedbon.bookservice.constants.PathConstants.USER_PARAM;
+import static ru.fedbon.bookservice.constants.WebClientConstants.AUTHOR_SERVICE;
+import static ru.fedbon.bookservice.constants.WebClientConstants.COMMENT_SERVICE;
+
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/books")
+@RequestMapping(API_V1_BOOKS)
 public class BookRestController {
 
     private final BookRepository bookRepository;
@@ -35,66 +71,66 @@ public class BookRestController {
 
     private final WebClient.Builder webClientBuilder;
 
-    @GetMapping("/user/{id}/count")
-    public Mono<Long> countBooksVotedByUserId(@PathVariable(name = "id") String userId) {
+    @GetMapping(COUNT_VOTES_BY_BOOK_ID)
+    public Mono<Long> countBooksVotedByUserId(@PathVariable(name = ID) String userId) {
         return bookRepository.findAll()
                 .filter(book -> book.getVoteByUserList().stream()
                         .anyMatch(vote -> vote.getUserId().equals(userId)))
                 .count()
-                .doOnNext(count -> log.info("Counted books voted by user ID {}: {}", userId, count))
-                .switchIfEmpty(Mono.error(new NotFoundException("No books voted by user")));
+                .doOnNext(count -> log.info(COUNT_VOTES_BY_BOOK_ID_MESSAGE, userId, count))
+                .switchIfEmpty(Mono.error(new NotFoundException(BOOKS_NOT_FOUND + userId)));
     }
 
     @GetMapping
     public Flux<BookWithAuthorInfoDto> handleGetAll(
-            @RequestParam(name = "order", defaultValue = "rating") String order,
-            @RequestParam(name = "desc", defaultValue = "true") boolean desc) {
+            @RequestParam(name = ORDER_PARAM, defaultValue = RATING_VALUE) String order,
+            @RequestParam(name = DESC_PARAM, defaultValue = TRUE_VALUE) boolean desc) {
         return bookRepository.findAll()
                 .flatMap(this::enrichBookWithAuthorInfo)
                 .sort((bookDto1, bookDto2) -> compareBooks(bookDto1, bookDto2, order, desc))
-                .doOnNext(bookDto -> log.info("Returning book: {}", bookDto));
+                .doOnNext(bookDto -> log.info(SUCCESSFULLY_RETRIEVED_BOOKS_MESSAGE, bookDto));
     }
 
-    @GetMapping(params = "genre")
+    @GetMapping(params = GENRE_PARAM)
     public Flux<BookWithAuthorInfoDto> handleGetAllByGenreId(
-            @RequestParam(name = "genre") String genreId,
-            @RequestParam(name = "order", defaultValue = "rating") String order,
-            @RequestParam(name = "desc", defaultValue = "true") boolean desc) {
+            @RequestParam(name = GENRE_PARAM) String genreId,
+            @RequestParam(name = ORDER_PARAM, defaultValue = RATING_VALUE) String order,
+            @RequestParam(name = DESC_PARAM, defaultValue = TRUE_VALUE) boolean desc) {
         return bookRepository.findAllByGenreId(genreId)
                 .flatMap(this::enrichBookWithAuthorInfo)
                 .sort((bookDto1, bookDto2) -> compareBooks(bookDto1, bookDto2, order, desc))
-                .doOnNext(bookDto -> log.info("Returning book: {}", bookDto));
+                .doOnNext(bookDto -> log.info(SUCCESSFULLY_RETRIEVED_BOOKS_MESSAGE, bookDto));
     }
 
-    @GetMapping(value = "/{id}")
-    public Mono<BookWithAuthorInfoAndCommentsDto> handleGetById(@PathVariable(value = "id") String id) {
+    @GetMapping(value = BOOK_ID)
+    public Mono<BookWithAuthorInfoAndCommentsDto> handleGetById(@PathVariable(value = ID) String id) {
         return bookRepository.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("Book not found")))
+                .switchIfEmpty(Mono.error(new NotFoundException(BOOK_NOT_FOUND + id)))
                 .flatMap(book -> enrichBookWithAuthorInfoAndComments(bookMapper
                         .mapToBookWithAuthorsAndCommentsDto(book)))
-                .doOnNext(bookDto -> log.info("Returning book: {}", bookDto));
+                .doOnNext(bookDto -> log.info(SUCCESSFULLY_RETRIEVED_BOOK_MESSAGE, bookDto));
     }
 
-    @GetMapping(params = "author")
+    @GetMapping(params = AUTHOR_PARAM)
     public Flux<BookWithAuthorInfoDto> handleGetAllByAuthorId(
-            @RequestParam(value = "author") String authorId,
-            @RequestParam(name = "order", defaultValue = "rating") String order,
-            @RequestParam(name = "desc", defaultValue = "true") boolean desc) {
+            @RequestParam(value = AUTHOR_PARAM) String authorId,
+            @RequestParam(name = ORDER_PARAM, defaultValue = RATING_VALUE) String order,
+            @RequestParam(name = DESC_PARAM, defaultValue = TRUE_VALUE) boolean desc) {
         return bookRepository.findAllByAuthorId(authorId)
                 .flatMap(this::enrichBookWithAuthorInfo)
                 .sort((bookDto1, bookDto2) -> compareBooks(bookDto1, bookDto2, order, desc))
-                .doOnNext(bookDto -> log.info("Books retrieved successfully for Author ID: {}", authorId));
+                .doOnNext(bookDto -> log.info(SUCCESSFULLY_RETRIEVED_BOOKS_BY_AUTHOR_ID_MESSAGE, authorId));
     }
 
-    @GetMapping(params = "user")
+    @GetMapping(params = USER_PARAM)
     public Flux<BookWithAuthorInfoAndCommentsDto> handleGetAllByUserId(
-            @RequestParam(name = "user") String userId,
-            @RequestParam(name = "sort", required = false) String sort) {
+            @RequestParam(name = USER_PARAM) String userId,
+            @RequestParam(name = FILTER_PARAM, required = false) String filter) {
         return bookRepository.findAll()
-                .filter(book -> shouldIncludeBook(book, userId, sort))
+                .filter(book -> shouldIncludeBook(book, userId, filter))
                 .flatMap(book -> enrichBookWithAuthorInfoAndComments(bookMapper
                         .mapToBookWithAuthorsAndCommentsDto(book)))
-                .sort((book1, book2) -> compareBooksByRatingAndVote(book1, book2, sort));
+                .sort((book1, book2) -> compareBooksByRatingAndVote(book1, book2, filter));
     }
 
     private Mono<BookWithAuthorInfoDto> enrichBookWithAuthorInfo(Book book) {
@@ -104,7 +140,7 @@ public class BookRestController {
                     bookWithAuthorsDto.setAuthorName(authorDto.getName());
                     return bookWithAuthorsDto;
                 })
-                .doOnNext(bookDto -> log.info("Enriched book with author info: {}", bookDto));
+                .doOnNext(bookDto -> log.info(ENRICHED_BOOK_WITH_AUTHOR_INFO, bookDto));
     }
 
     private Mono<BookWithAuthorInfoAndCommentsDto> enrichBookWithAuthorInfoAndComments(
@@ -120,42 +156,42 @@ public class BookRestController {
                                 return bookDto;
                             });
                 })
-                .doOnNext(dto -> log.info("Enriched book with author info and comments: {}", dto));
+                .doOnNext(dto -> log.info(ENRICHED_BOOK_WITH_AUTHOR_INFO_AND_COMMENTS, dto));
     }
 
     private Mono<AuthorResponseDto> fetchAuthorInfo(String authorId) {
         return webClientBuilder.build()
                 .get()
-                .uri("http://author-service/api/v1/authors/{id}", authorId)
+                .uri(AUTHOR_SERVICE + API_V1_AUTHORS + AUTHOR_ID, authorId)
                 .retrieve()
                 .bodyToMono(AuthorResponseDto.class)
-                .doOnNext(authorDto -> log.info("Received author information: {}", authorDto))
-                .transform(it -> cbFactory.create("author-service")
+                .doOnNext(authorDto -> log.info(SUCCESSFULLY_RECEIVED_AUTHOR_INFORMATION_MESSAGE, authorDto))
+                .transform(it -> cbFactory.create(CIRCUIT_BREAKER_AUTHOR_SERVICE)
                         .run(it, throwable -> Mono.just(new AuthorResponseDto(null,
-                                "Author information not available", null))));
+                                AUTHOR_INFORMATION_NOT_AVAILABLE_MESSAGE, null))));
 
     }
 
     private Flux<CommentResponseDto> fetchComments(String bookId) {
         return webClientBuilder.build()
                 .get()
-                .uri("http://comment-service/api/v1/comments/book/{id}", bookId)
+                .uri(COMMENT_SERVICE + API_V1_COMMENTS + COMMENTS_BY_BOOK_ID, bookId)
                 .retrieve()
                 .bodyToFlux(CommentResponseDto.class)
-                .transform(it -> cbFactory.create("comment-service")
+                .transform(it -> cbFactory.create(CIRCUIT_BREAKER_COMMENT_SERVICE)
                         .run(it, throwable -> Flux.just(new CommentResponseDto(null,
-                                "Comments information not available", null, null,
+                                COMMENTS_INFORMATION_NOT_AVAILABLE_MESSAGE, null, null,
                                 null, null, null))))
-                .doOnNext(commentDto -> log.info("Received comment: {}", commentDto));
+                .doOnNext(commentDto -> log.info(RECEIVED_COMMENTS_MESSAGE, commentDto));
     }
 
-    private boolean shouldIncludeBook(Book book, String userId, String sort) {
+    private boolean shouldIncludeBook(Book book, String userId, String filter) {
         boolean hasUserVote = book.getVoteByUserList().stream()
                 .anyMatch(vote -> vote.getUserId().equals(userId));
-        if (sort != null && sort.equalsIgnoreCase("positive")) {
+        if (filter != null && filter.equalsIgnoreCase(POSITIVE)) {
             return hasUserVote && book.getVoteByUserList().stream()
                     .anyMatch(vote -> vote.getUserId().equals(userId) && vote.isPositive());
-        } else if (sort != null && sort.equalsIgnoreCase("negative")) {
+        } else if (filter != null && filter.equalsIgnoreCase(NEGATIVE)) {
             return hasUserVote && book.getVoteByUserList().stream()
                     .anyMatch(vote -> vote.getUserId().equals(userId) && !vote.isPositive());
         } else {
@@ -164,18 +200,18 @@ public class BookRestController {
     }
 
     private int compareBooksByRatingAndVote(BookWithAuthorInfoAndCommentsDto bookDto1,
-                                            BookWithAuthorInfoAndCommentsDto bookDto2, String sort) {
+                                            BookWithAuthorInfoAndCommentsDto bookDto2, String order) {
         int ratingComparison = Double.compare(bookDto2.getRating(), bookDto1.getRating());
         if (ratingComparison != 0) {
             return ratingComparison;
         } else {
-            return compareBooksByVote(bookDto1, bookDto2, sort);
+            return compareBooksByVote(bookDto1, bookDto2, order);
         }
     }
 
     private int compareBooks(BookWithAuthorInfoDto bookDto1, BookWithAuthorInfoDto bookDto2,
                              String order, boolean desc) {
-        if ("createdAt".equalsIgnoreCase(order)) {
+        if (CREATED_AT.equalsIgnoreCase(order)) {
             return compareByCreatedAt(bookDto1, bookDto2, desc);
         } else {
             return compareByRating(bookDto1, bookDto2, desc);
@@ -183,10 +219,10 @@ public class BookRestController {
     }
 
     private int compareBooksByVote(BookWithAuthorInfoAndCommentsDto bookDto1,
-                                   BookWithAuthorInfoAndCommentsDto bookDto2, String sort) {
-        if ("positive".equalsIgnoreCase(sort)) {
+                                   BookWithAuthorInfoAndCommentsDto bookDto2, String order) {
+        if (POSITIVE.equalsIgnoreCase(order)) {
             return Integer.compare(bookDto2.getPositiveVotesCount(), bookDto1.getPositiveVotesCount());
-        } else if ("negative".equalsIgnoreCase(sort)) {
+        } else if (NEGATIVE.equalsIgnoreCase(order)) {
             return Integer.compare(bookDto2.getNegativeVotesCount(), bookDto1.getNegativeVotesCount());
         } else {
             return 0;

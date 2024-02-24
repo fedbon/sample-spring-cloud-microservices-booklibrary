@@ -15,6 +15,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.fedbon.userserver.constants.AppConstants.ERROR;
+import static ru.fedbon.userserver.constants.AppConstants.ERRORS;
+import static ru.fedbon.userserver.constants.AppConstants.MESSAGE;
+import static ru.fedbon.userserver.constants.AppConstants.STATUS;
 
 
 @Component
@@ -29,7 +33,7 @@ public class AppErrorHandler extends DefaultErrorAttributes {
         var errorList = new ArrayList<Map<String, Object>>();
         determineHttpStatusAndBuildErrorList(error, errorList, errorAttributes);
 
-        errorAttributes.put("errors", errorList);
+        errorAttributes.put(ERRORS, errorList);
         return errorAttributes;
     }
 
@@ -66,9 +70,9 @@ public class AppErrorHandler extends DefaultErrorAttributes {
 
     private Map<String, Object> createErrorMap(String message, HttpStatus status) {
         var errorMap = new LinkedHashMap<String, Object>();
-        errorMap.put("message", message);
-        errorMap.put("status", status.value());
-        errorMap.put("error", status.getReasonPhrase());
+        errorMap.put(MESSAGE, message);
+        errorMap.put(STATUS, status.value());
+        errorMap.put(ERROR, status.getReasonPhrase());
         return errorMap;
     }
 }

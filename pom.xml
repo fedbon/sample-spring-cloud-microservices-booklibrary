@@ -45,6 +45,7 @@
 
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
+        <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
         <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
 
         <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
@@ -60,6 +61,10 @@
         <json-path.version>2.9.0</json-path.version>
 
         <google-guava.version>33.0.0-jre</google-guava.version>
+
+        <apache-commons.version>1.26.0</apache-commons.version>
+
+        <ru.fedbon.commons.version>1.0</ru.fedbon.commons.version>
 
     </properties>
 

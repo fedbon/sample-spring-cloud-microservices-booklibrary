@@ -18,10 +18,43 @@ import ru.fedbon.userserver.exception.NotFoundException;
 import ru.fedbon.userserver.mapper.UserMapper;
 import ru.fedbon.userserver.repository.UserRepository;
 
+import java.util.Objects;
+
+import static ru.fedbon.userserver.constants.AppConstants.BAD_COUNT_AUTHOR_SERVICE_RESPONSE;
+import static ru.fedbon.userserver.constants.AppConstants.BAD_COUNT_BOOK_SERVICE_RESPONSE;
+import static ru.fedbon.userserver.constants.AppConstants.BAD_COUNT_COMMENT_SERVICE_RESPONSE;
+import static ru.fedbon.userserver.constants.AppConstants.CIRCUIT_BREAKER_AUTHOR_SERVICE;
+import static ru.fedbon.userserver.constants.AppConstants.CIRCUIT_BREAKER_BOOK_SERVICE;
+import static ru.fedbon.userserver.constants.AppConstants.CIRCUIT_BREAKER_COMMENT_SERVICE;
+import static ru.fedbon.userserver.constants.ErrorMessage.AUTHORS_NOT_FOUND_BY_USER_ID;
+import static ru.fedbon.userserver.constants.ErrorMessage.BOOKS_NOT_FOUND_BY_USER_ID;
+import static ru.fedbon.userserver.constants.ErrorMessage.COMMENTS_NOT_FOUND_BY_USER_ID;
+import static ru.fedbon.userserver.constants.ErrorMessage.FAILED_TO_FETCH_AUTHORS_BY_USER_ID;
+import static ru.fedbon.userserver.constants.ErrorMessage.FAILED_TO_FETCH_BOOKS_BY_USER_ID;
+import static ru.fedbon.userserver.constants.ErrorMessage.FAILED_TO_FETCH_COMMENTS_BY_USER_ID;
+import static ru.fedbon.userserver.constants.ErrorMessage.MISSED_AUTHORIZATION_HEADER;
+import static ru.fedbon.userserver.constants.ErrorMessage.USER_NOT_FOUND;
+import static ru.fedbon.userserver.constants.Message.COUNTED_AUTHORS_BY_USER_ID_MESSAGE;
+import static ru.fedbon.userserver.constants.Message.COUNTED_BOOKS_BY_USER_ID_MESSAGE;
+import static ru.fedbon.userserver.constants.Message.COUNTED_COMMENTS_BY_USER_ID_MESSAGE;
+import static ru.fedbon.userserver.constants.PathConstants.API_V1_AUTHORS;
+import static ru.fedbon.userserver.constants.PathConstants.API_V1_BOOKS;
+import static ru.fedbon.userserver.constants.PathConstants.API_V1_COMMENTS;
+import static ru.fedbon.userserver.constants.PathConstants.API_V1_USER;
+import static ru.fedbon.userserver.constants.PathConstants.COUNT_COMMENTS_BY_USER_ID;
+import static ru.fedbon.userserver.constants.PathConstants.COUNT_VOTES_BY_AUTHOR_ID;
+import static ru.fedbon.userserver.constants.PathConstants.COUNT_VOTES_BY_BOOK_ID;
+import static ru.fedbon.userserver.constants.PathConstants.MY_ACCOUNT;
+import static ru.fedbon.userserver.constants.PathConstants.USER_ID;
+import static ru.fedbon.userserver.constants.WebClientConstants.AUTHOR_SERVICE;
+import static ru.fedbon.userserver.constants.WebClientConstants.BOOK_SERVICE;
+import static ru.fedbon.userserver.constants.WebClientConstants.COMMENT_SERVICE;
+
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user")
+@RequestMapping(API_V1_USER)
 public class UserRestController {
 
     private final UserRepository userRepository;
@@ -32,106 +65,96 @@ public class UserRestController {
 
     private final WebClient.Builder webClientBuilder;
 
-    @GetMapping("/my")
+    @GetMapping(MY_ACCOUNT)
     public Mono<AccountDto> handleGetAccountInfo(Authentication authentication) {
         if (authentication != null) {
             var customPrincipal = (CustomPrincipal) authentication.getPrincipal();
             var userMono = userRepository.findById(customPrincipal.getId());
-            var booksCountMono = fetchBooksCount("1");
-            var authorsCountMono = fetchAuthorsCount("1");
+            var booksCountMono = fetchBooksCount("1"); //stub should be changed to customPrincipal.getId()
+            var authorsCountMono = fetchAuthorsCount("1"); //stub should be changed to customPrincipal.getId()
 
-            return Mono.zip(userMono, booksCountMono, authorsCountMono)
-                    .map(tuple -> {
-                        var user = tuple.getT1();
-                        var booksCount = tuple.getT2();
-                        var authorsCount = tuple.getT3();
-                        var accountDto = userMapper.mapUserToAccountDto(user);
-                        accountDto.setBooksCount(booksCount.intValue());
-                        accountDto.setAuthorsCount(authorsCount.intValue());
-                        return accountDto;
-                    })
-                    .switchIfEmpty(Mono.error(new NotFoundException("User not found")));
+            return Mono.zip(userMono, booksCountMono, authorsCountMono).map(tuple -> {
+                var user = tuple.getT1();
+                var booksCount = tuple.getT2();
+                var authorsCount = tuple.getT3();
+                var accountDto = userMapper.mapUserToAccountDto(user);
+                accountDto.setBooksCount(booksCount.intValue());
+                accountDto.setAuthorsCount(authorsCount.intValue());
+                return accountDto;
+            }).switchIfEmpty(Mono.error(new NotFoundException(USER_NOT_FOUND + customPrincipal.getId())));
         } else {
-            return Mono.error(new InvalidCredentialsException("Authorization header is empty"));
+            return Mono.error(new InvalidCredentialsException(MISSED_AUTHORIZATION_HEADER));
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(USER_ID)
     public Mono<UserDto> handleGetUserById(@PathVariable String id) {
         var userMono = userRepository.findById(id);
 
-        var commentsCountMono = fetchCommentsCount("1");
-        var booksCountMono = fetchBooksCount("1");
+        var commentsCountMono = fetchCommentsCount("1"); //stub should be changed to id
+        var booksCountMono = fetchBooksCount("1"); //stub should be changed to id
 
-        return Mono.zip(userMono, commentsCountMono, booksCountMono)
-                .map(tuple -> {
-                    var user = tuple.getT1();
-                    var commentsCount = tuple.getT2();
-                    var booksCount = tuple.getT3();
+        return Mono.zip(userMono, commentsCountMono, booksCountMono).map(tuple -> {
+            var user = tuple.getT1();
+            var commentsCount = tuple.getT2();
+            var booksCount = tuple.getT3();
 
-                    var userDto = userMapper.mapUserToUserDto(user);
-                    userDto.setCommentsCount(commentsCount.intValue());
-                    userDto.setBooksCount(booksCount.intValue());
+            var userDto = userMapper.mapUserToUserDto(user);
+            userDto.setCommentsCount(commentsCount.intValue());
+            userDto.setBooksCount(booksCount.intValue());
 
-                    return userDto;
-                })
-                .switchIfEmpty(Mono.error(new NotFoundException("User not found with id: " + id)));
+            return userDto;
+        }).switchIfEmpty(Mono.error(new NotFoundException(USER_NOT_FOUND + id)));
     }
 
     public Mono<Long> fetchAuthorsCount(String userId) {
         return webClientBuilder.build()
                 .get()
-                .uri("http://author-service/api/v1/authors/user/{id}/count", userId)
+                .uri(AUTHOR_SERVICE + API_V1_AUTHORS + COUNT_VOTES_BY_AUTHOR_ID, userId)
                 .retrieve()
                 .bodyToMono(Long.class)
-                .transform(it -> cbFactory.create("author-service")
-                        .run(it, throwable -> Mono.just(-1L)))
+                .transform(it -> cbFactory.create(CIRCUIT_BREAKER_AUTHOR_SERVICE)
+                        .run(it, throwable -> Mono.just(BAD_COUNT_AUTHOR_SERVICE_RESPONSE)))
                 .doOnSuccess(count -> {
-                    if (count == -1) {
-                        log.warn("Failed to fetch comments count for userId {}", userId);
-                    } else {
-                        log.info("Received comments count for userId {}: {}", userId, count);
-                    }
-                })
-                .onErrorResume(ex ->
-                        Mono.error(new NotFoundException("Failed to fetch authors count related to user ID")));
+            if (Objects.equals(count, BAD_COUNT_AUTHOR_SERVICE_RESPONSE)) {
+                log.warn(FAILED_TO_FETCH_AUTHORS_BY_USER_ID, userId);
+            } else {
+                log.info(COUNTED_AUTHORS_BY_USER_ID_MESSAGE, userId, count);
+            }
+        }).onErrorResume(ex -> Mono.error(new NotFoundException(AUTHORS_NOT_FOUND_BY_USER_ID + userId)));
     }
 
     public Mono<Long> fetchBooksCount(String userId) {
         return webClientBuilder.build()
                 .get()
-                .uri("http://book-service/api/v1/books/user/{id}/count", userId)
+                .uri(BOOK_SERVICE + API_V1_BOOKS + COUNT_VOTES_BY_BOOK_ID, userId)
                 .retrieve()
                 .bodyToMono(Long.class)
-                .transform(it -> cbFactory.create("book-service")
-                        .run(it, throwable -> Mono.just(-1L)))
+                .transform(it -> cbFactory.create(CIRCUIT_BREAKER_BOOK_SERVICE)
+                        .run(it, throwable -> Mono.just(BAD_COUNT_BOOK_SERVICE_RESPONSE)))
                 .doOnSuccess(count -> {
-                    if (count == -1) {
-                        log.warn("Failed to fetch comments count for userId {}", userId);
-                    } else {
-                        log.info("Received comments count for userId {}: {}", userId, count);
-                    }
-                })
-                .onErrorResume(ex ->
-                        Mono.error(new NotFoundException("Failed to fetch books count by user ID")));
+            if (Objects.equals(count, BAD_COUNT_BOOK_SERVICE_RESPONSE)) {
+                log.warn(FAILED_TO_FETCH_BOOKS_BY_USER_ID, userId);
+            } else {
+                log.info(COUNTED_BOOKS_BY_USER_ID_MESSAGE, userId, count);
+            }
+        }).onErrorResume(ex -> Mono.error(new NotFoundException(BOOKS_NOT_FOUND_BY_USER_ID + userId)));
     }
 
     private Mono<Long> fetchCommentsCount(String userId) {
         return webClientBuilder.build()
                 .get()
-                .uri("http://comment-service/api/v1/comments/user/{id}/count", userId)
+                .uri(COMMENT_SERVICE + API_V1_COMMENTS + COUNT_COMMENTS_BY_USER_ID, userId)
                 .retrieve()
                 .bodyToMono(Long.class)
-                .transform(it -> cbFactory.create("comment-service")
-                        .run(it, throwable -> Mono.just(-1L)))
+                .transform(it -> cbFactory.create(CIRCUIT_BREAKER_COMMENT_SERVICE)
+                        .run(it, throwable -> Mono.just(BAD_COUNT_COMMENT_SERVICE_RESPONSE)))
                 .doOnSuccess(count -> {
-                    if (count == -1) {
-                        log.warn("Failed to fetch comments count for userId {}", userId);
-                    } else {
-                        log.info("Received comments count for userId {}: {}", userId, count);
-                    }
-                })
-                .onErrorResume(ex ->
-                        Mono.error(new NotFoundException("Failed to fetch comments count by userId")));
+            if (Objects.equals(count, BAD_COUNT_COMMENT_SERVICE_RESPONSE)) {
+                log.warn(FAILED_TO_FETCH_COMMENTS_BY_USER_ID, userId);
+            } else {
+                log.info(COUNTED_COMMENTS_BY_USER_ID_MESSAGE, userId, count);
+            }
+        }).onErrorResume(ex -> Mono.error(new NotFoundException(COMMENTS_NOT_FOUND_BY_USER_ID + userId)));
     }
 }

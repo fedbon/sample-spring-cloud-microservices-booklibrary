@@ -14,6 +14,9 @@ import ru.fedbon.userserver.dto.security.CustomPrincipal;
 
 import java.util.List;
 
+import static ru.fedbon.userserver.constants.AppConstants.ROLE;
+import static ru.fedbon.userserver.constants.AppConstants.USERNAME;
+
 @RequiredArgsConstructor
 public class BearerTokenServerAuthenticationConverter implements ServerAuthenticationConverter {
 
@@ -25,7 +28,7 @@ public class BearerTokenServerAuthenticationConverter implements ServerAuthentic
     public Mono<Authentication> convert(ServerWebExchange exchange) {
         return extractHeader(exchange)
                 .flatMap(authValue -> {
-                    String token = authValue.substring(BEARER_PREFIX.length());
+                    var token = authValue.substring(BEARER_PREFIX.length());
                     return jwtUtil.getVerificationResult(token)
                             .flatMap(this::createToken);
                 });
@@ -40,13 +43,10 @@ public class BearerTokenServerAuthenticationConverter implements ServerAuthentic
     private Mono<Authentication> createToken(VerificationResultVo verificationResultVo) {
         Claims claims = verificationResultVo.claims();
         String subject = claims.getSubject();
-
-        String role = claims.get("role", String.class);
-        String username = claims.get("username", String.class);
-
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-
-        CustomPrincipal principal = new CustomPrincipal(subject, username);
+        var role = claims.get(ROLE, String.class);
+        var username = claims.get(USERNAME, String.class);
+        var authorities = List.of(new SimpleGrantedAuthority(role));
+        var principal = new CustomPrincipal(subject, username);
 
         return Mono.justOrEmpty(new UsernamePasswordAuthenticationToken(principal, null, authorities));
     }

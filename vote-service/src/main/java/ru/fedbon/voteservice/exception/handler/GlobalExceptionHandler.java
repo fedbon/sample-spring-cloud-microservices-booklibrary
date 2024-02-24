@@ -16,6 +16,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.fedbon.voteservice.constants.AppConstants.ERRORS;
+import static ru.fedbon.voteservice.constants.AppConstants.ERROR_CODE;
+import static ru.fedbon.voteservice.constants.AppConstants.MESSAGE;
+import static ru.fedbon.voteservice.constants.AppConstants.STATUS;
+import static ru.fedbon.voteservice.constants.ErrorMessage.INTERNAL_SERVER_ERROR;
+import static ru.fedbon.voteservice.constants.ErrorMessage.NOT_FOUND;
 
 
 @ControllerAdvice
@@ -25,7 +31,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ApiException.class, NotFoundException.class})
     public ResponseEntity<Object> handleApiException(ApiException ex) {
         return ResponseEntity.badRequest().body(buildErrorResponse(ex.getMessage(),
-                HttpStatus.NOT_FOUND.value(), "NOT_FOUND"));
+                HttpStatus.NOT_FOUND.value(), NOT_FOUND));
     }
 
 
@@ -34,7 +40,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleInternalServerError(Exception ex) {
         var errorMessage = (ex.getMessage() != null) ? ex.getMessage() : ex.getClass().getName();
         return ResponseEntity.internalServerError().body(buildErrorResponse(errorMessage,
-                HttpStatus.INTERNAL_SERVER_ERROR.value(), "INTERNAL_SERVER_ERROR"));
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), INTERNAL_SERVER_ERROR));
     }
 
     private Map<String, Object> buildErrorResponse(String message, int status, String errorCode) {
@@ -42,12 +48,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         List<Map<String, Object>> errorList = new ArrayList<>();
         Map<String, Object> errorMap = new LinkedHashMap<>();
-        errorMap.put("message", message);
-        errorMap.put("status", status);
-        errorMap.put("errorCode", errorCode);
+        errorMap.put(MESSAGE, message);
+        errorMap.put(STATUS, status);
+        errorMap.put(ERROR_CODE, errorCode);
         errorList.add(errorMap);
 
-        errorAttributes.put("errors", errorList);
+        errorAttributes.put(ERRORS, errorList);
 
         return errorAttributes;
     }

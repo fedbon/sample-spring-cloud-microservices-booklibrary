@@ -15,23 +15,29 @@ import ru.fedbon.userserver.mapper.UserMapper;
 import ru.fedbon.userserver.service.AuthService;
 import reactor.core.publisher.Mono;
 
+import static ru.fedbon.userserver.constants.PathConstants.API_V1_AUTH;
+import static ru.fedbon.userserver.constants.PathConstants.SIGN_IN;
+import static ru.fedbon.userserver.constants.PathConstants.SIGN_UP;
+import static ru.fedbon.userserver.constants.PathConstants.TOKEN_PARAM;
+import static ru.fedbon.userserver.constants.PathConstants.VALIDATE;
+
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/auth")
+@RequestMapping(API_V1_AUTH)
 public class AuthRestController {
 
     private final AuthService authService;
 
     private final UserMapper userMapper;
 
-    @PostMapping("/signup")
+    @PostMapping(SIGN_UP)
     public Mono<RegistrationResponse> handleSignUp(@RequestBody RegistrationRequest registrationRequest) {
         return authService.registerUser(userMapper.mapRegistrationRequestToUser(registrationRequest))
                 .map(userMapper::mapUserToRegistrationResponse);
     }
 
-    @PostMapping("/signin")
+    @PostMapping(SIGN_IN)
     public Mono<AuthResponseDto> handleSignIn(@RequestBody AuthRequestDto dto) {
         return authService.authenticate(dto.getUsername(), dto.getPassword())
                 .flatMap(tokenDetails -> Mono.just(
@@ -44,8 +50,8 @@ public class AuthRestController {
                 ));
     }
 
-    @PostMapping("/validate")
-    public Mono<UserValidationResponse> handleValidateToken(@RequestParam("token") String token) {
+    @PostMapping(VALIDATE)
+    public Mono<UserValidationResponse> handleValidateToken(@RequestParam(TOKEN_PARAM) String token) {
         return authService.validateToken(token);
     }
 }

@@ -21,11 +21,30 @@ import ru.fedbon.commentservice.mapper.CommentMapper;
 
 import java.util.Comparator;
 
+import static ru.fedbon.commentservice.constants.AppConstants.CIRCUIT_BREAKER_BOOK_SERVICE;
+import static ru.fedbon.commentservice.constants.ErrorMessage.AUTHOR_INFORMATION_NOT_AVAILABLE_MESSAGE;
+import static ru.fedbon.commentservice.constants.ErrorMessage.BOOK_INFORMATION_NOT_AVAILABLE_MESSAGE;
+import static ru.fedbon.commentservice.constants.ErrorMessage.COMMENTS_NOT_FOUND_BY_BOOK_ID;
+import static ru.fedbon.commentservice.constants.ErrorMessage.COMMENTS_NOT_FOUND_BY_USER_ID;
+import static ru.fedbon.commentservice.constants.Message.COUNTED_COMMENTS_BY_USER_ID_MESSAGE;
+import static ru.fedbon.commentservice.constants.Message.RECEIVED_BOOK_MESSAGE;
+import static ru.fedbon.commentservice.constants.Message.SUCCESSFULLY_RETRIEVED_COMMENTS_BY_BOOK_ID_MESSAGE;
+import static ru.fedbon.commentservice.constants.Message.SUCCESSFULLY_RETRIEVED_COMMENTS_BY_USER_ID_MESSAGE;
+import static ru.fedbon.commentservice.constants.PathConstants.API_V1_BOOKS;
+import static ru.fedbon.commentservice.constants.PathConstants.API_V1_COMMENTS;
+import static ru.fedbon.commentservice.constants.PathConstants.BOOK_ID;
+import static ru.fedbon.commentservice.constants.PathConstants.COMMENTS_BY_BOOK_ID;
+import static ru.fedbon.commentservice.constants.PathConstants.COMMENTS_BY_USER_ID;
+import static ru.fedbon.commentservice.constants.PathConstants.COUNT_COMMENTS_BY_USER_ID;
+import static ru.fedbon.commentservice.constants.PathConstants.CREATED_AT;
+import static ru.fedbon.commentservice.constants.PathConstants.ID;
+import static ru.fedbon.commentservice.constants.WebClientConstants.BOOK_SERVICE;
+
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/v1/comments")
+@RequestMapping(value = API_V1_COMMENTS)
 public class CommentRestController {
 
     private final CommentRepository commentRepository;
@@ -36,28 +55,27 @@ public class CommentRestController {
 
     private final WebClient.Builder webClientBuilder;
 
-    @GetMapping(value = "/user/{id}/count")
-    public Mono<Long> handleCountCommentsByUserId(@PathVariable(value = "id") String userId) {
+    @GetMapping(value = COUNT_COMMENTS_BY_USER_ID)
+    public Mono<Long> handleCountCommentsByUserId(@PathVariable(value = ID) String userId) {
         return commentRepository.countByUserId(userId)
-                .doOnSuccess(count -> log.info("Count of comments for userId {}: {}", userId, count))
+                .doOnSuccess(count -> log.info(COUNTED_COMMENTS_BY_USER_ID_MESSAGE, userId, count))
                 .onErrorResume(ex ->
-                        Mono.error(new NotFoundException("Failed to count comments by userId")));
+                        Mono.error(new NotFoundException(COMMENTS_NOT_FOUND_BY_USER_ID + userId)));
     }
 
-    @GetMapping(value = "/book/{id}")
-    public Flux<CommentDto> handleGetAllByBookId(@PathVariable(value = "id") String bookId) {
-        return commentRepository.findAllByBookId(Sort.by(Sort.Direction.DESC, "createdAt"), bookId)
+    @GetMapping(value = COMMENTS_BY_BOOK_ID)
+    public Flux<CommentDto> handleGetAllByBookId(@PathVariable(value = ID) String bookId) {
+        return commentRepository.findAllByBookId(Sort.by(Sort.Direction.DESC, CREATED_AT), bookId)
                 .map(commentMapper::mapToCommentDto)
-                .doOnComplete(() -> log.info("All reviews retrieved successfully for bookId: {}", bookId))
+                .doOnComplete(() -> log.info(SUCCESSFULLY_RETRIEVED_COMMENTS_BY_BOOK_ID_MESSAGE, bookId))
                 .onErrorResume(ex ->
-                        Flux.error(new NotFoundException("Failed to retrieve reviews by bookId")));
+                        Flux.error(new NotFoundException(COMMENTS_NOT_FOUND_BY_BOOK_ID + bookId)));
     }
 
-    @GetMapping(value = "/user/{id}")
-    public Flux<CommentByBookDto> handleGetAllByUserId(@PathVariable(value = "id") String userId) {
-        var userComments = commentRepository.findAllByUserId(Sort.by(Sort.Direction.DESC, "createdAt"),
-                userId);
-
+    @GetMapping(value = COMMENTS_BY_USER_ID)
+    public Flux<CommentByBookDto> handleGetAllByUserId(@PathVariable(value = ID) String userId) {
+        var userComments = commentRepository.findAllByUserId(
+                Sort.by(Sort.Direction.DESC, CREATED_AT), userId);
         return userComments
                 .flatMap(comment -> fetchBookInfo(comment.getBookId())
                         .map(bookInfo -> {
@@ -67,20 +85,20 @@ public class CommentRestController {
                             return commentDto;
                         }))
                 .sort(Comparator.comparing(CommentByBookDto::getTimeAgo).reversed())
-                .doOnComplete(() -> log.info("All reviews retrieved successfully for userId: {}", userId))
+                .doOnComplete(() -> log.info(SUCCESSFULLY_RETRIEVED_COMMENTS_BY_USER_ID_MESSAGE, userId))
                 .onErrorResume(ex ->
-                        Flux.error(new NotFoundException("Failed to retrieve reviews by userId")));
+                        Flux.error(new NotFoundException(COMMENTS_NOT_FOUND_BY_USER_ID + userId)));
     }
 
     private Mono<BookResponseDto> fetchBookInfo(String bookId) {
         return webClientBuilder.build()
                 .get()
-                .uri("http://book-service/api/v1/books/{id}", bookId)
+                .uri(BOOK_SERVICE + API_V1_BOOKS + BOOK_ID, bookId)
                 .retrieve()
                 .bodyToMono(BookResponseDto.class)
-                .transform(it -> cbFactory.create("book-service")
+                .transform(it -> cbFactory.create(CIRCUIT_BREAKER_BOOK_SERVICE)
                         .run(it, throwable -> Mono.just(new BookResponseDto(null,
-                                "Book information not available", "Author information not available"))))
-                .doOnNext(bookDto -> log.info("Received book information: {}", bookDto));
+                                BOOK_INFORMATION_NOT_AVAILABLE_MESSAGE, AUTHOR_INFORMATION_NOT_AVAILABLE_MESSAGE))))
+                .doOnNext(bookDto -> log.info(RECEIVED_BOOK_MESSAGE, bookDto));
     }
 }

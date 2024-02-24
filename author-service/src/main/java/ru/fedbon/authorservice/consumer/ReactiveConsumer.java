@@ -11,6 +11,10 @@ import ru.fedbon.authorservice.model.VoteByUser;
 
 import ru.fedbon.authorservice.repository.AuthorRepository;
 
+import static ru.fedbon.authorservice.constants.ErrorMessage.CONSUMPTION_PROBLEM_MESSAGE;
+import static ru.fedbon.authorservice.constants.Message.CONSUMER_RECORD;
+import static ru.fedbon.authorservice.constants.Message.SUCCESSFULLY_CONSUMED_MESSAGE;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -29,7 +33,7 @@ public class ReactiveConsumer {
         return reactiveKafkaConsumerTemplate
                 .receiveAutoAck()
                 .flatMap(consumerRecord -> {
-                    log.info("Received key={}, value={} from topic={}, offset={}",
+                    log.info(CONSUMER_RECORD,
                             consumerRecord.key(),
                             consumerRecord.value(),
                             consumerRecord.topic(),
@@ -41,9 +45,9 @@ public class ReactiveConsumer {
                                 updateOrAddVote(author, voteAuthorMessage);
                                 return authorRepository.save(author).thenReturn(voteAuthorMessage);
                             })
-                            .doOnNext(msg -> log.info("Successfully consumed {}={}",
+                            .doOnNext(msg -> log.info(SUCCESSFULLY_CONSUMED_MESSAGE,
                                     VoteAuthorMessage.class.getSimpleName(), msg))
-                            .doOnError(throwable -> log.error("Something bad happened while processing message: {}",
+                            .doOnError(throwable -> log.error(CONSUMPTION_PROBLEM_MESSAGE,
                                     throwable.getMessage()));
                 });
     }
@@ -53,7 +57,6 @@ public class ReactiveConsumer {
                 .filter(vote -> vote.getUserId().equals(message.getUserId()))
                 .findFirst()
                 .orElse(null);
-
         if (existingVote != null) {
             existingVote.setIsEnabled(message.isEnabled());
         } else {

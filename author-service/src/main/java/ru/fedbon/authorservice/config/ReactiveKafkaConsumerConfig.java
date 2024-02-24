@@ -11,6 +11,8 @@ import ru.fedbon.authorservice.consumer.VoteAuthorMessage;
 
 import java.util.Collections;
 
+import static ru.fedbon.authorservice.constants.AppConstants.AUTHOR_TOPIC;
+
 @Configuration
 public class ReactiveKafkaConsumerConfig {
 
@@ -25,6 +27,6 @@ public class ReactiveKafkaConsumerConfig {
             KafkaProperties kafkaProperties, SslBundles sslBundles) {
         return ReceiverOptions.<String, VoteAuthorMessage>create(kafkaProperties
                         .getConsumer().buildProperties(sslBundles))
-                .subscription(Collections.singleton("authorTopic"));
+                .subscription(Collections.singleton(AUTHOR_TOPIC));
     }
 }

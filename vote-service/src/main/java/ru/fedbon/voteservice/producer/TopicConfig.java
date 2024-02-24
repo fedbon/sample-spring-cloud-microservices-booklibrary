@@ -5,27 +5,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
+import static ru.fedbon.voteservice.constants.AppConstants.AUTHOR_TOPIC;
+
 @Configuration
 public class TopicConfig {
 
     @Bean
-    public NewTopic bookTopic() {
-        return TopicBuilder
-                .name("bookTopic")
-                .build();
-    }
-
-    @Bean
     public NewTopic authorTopic() {
         return TopicBuilder
-                .name("authorTopic")
+                .name(AUTHOR_TOPIC)
                 .build();
     }
 
-    @Bean
-    public NewTopic commentTopic() {
-        return TopicBuilder
-                .name("commentTopic")
-                .build();
-    }
 }

@@ -22,6 +22,11 @@ import org.springframework.security.web.server.authentication.AuthenticationWebF
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import reactor.core.publisher.Mono;
 
+import static ru.fedbon.userserver.constants.ErrorMessage.ACCESS_DENIED;
+import static ru.fedbon.userserver.constants.ErrorMessage.ACCOUNT_DISABLED;
+import static ru.fedbon.userserver.constants.ErrorMessage.UNAUTHORIZED_WITH_MESSAGE;
+import static ru.fedbon.userserver.constants.PathConstants.BEARER_SERVER_WEB_EXCHANGE_MATCHERS;
+
 
 @Slf4j
 @Configuration
@@ -39,7 +44,7 @@ public class SecurityConfig implements ReactiveAuthenticationManager {
         var principal = (CustomPrincipal) authentication.getPrincipal();
         return userRepository.findById(principal.getId())
                 .filter(User::isEnabled)
-                .switchIfEmpty(Mono.error(new InvalidCredentialsException("Account is disabled")))
+                .switchIfEmpty(Mono.error(new InvalidCredentialsException(ACCOUNT_DISABLED)))
                 .map(user -> authentication);
     }
 
@@ -54,10 +59,10 @@ public class SecurityConfig implements ReactiveAuthenticationManager {
                         .permitAll()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((swe, e) -> {
-                            log.error("IN securityWebFilterChain - unauthorized error: {}", e.getMessage());
+                            log.error(UNAUTHORIZED_WITH_MESSAGE, e.getMessage());
                             return Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED));
                         }).accessDeniedHandler((swe, e) -> {
-                            log.error("IN securityWebFilterChain - access denied: {}", e.getMessage());
+                            log.error(ACCESS_DENIED, e.getMessage());
                             return Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN));
                         })
                 )
@@ -70,7 +75,7 @@ public class SecurityConfig implements ReactiveAuthenticationManager {
         bearerAuthenticationFilter.setServerAuthenticationConverter(
                 new BearerTokenServerAuthenticationConverter(new JwtUtil(secret)));
         bearerAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers
-                .pathMatchers("/**"));
+                .pathMatchers(BEARER_SERVER_WEB_EXCHANGE_MATCHERS));
         return bearerAuthenticationFilter;
     }
 }

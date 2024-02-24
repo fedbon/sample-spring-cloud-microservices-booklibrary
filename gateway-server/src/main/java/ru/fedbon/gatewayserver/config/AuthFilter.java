@@ -16,14 +16,25 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import static ru.fedbon.gatewayserver.constants.AppConstants.BEARER;
+import static ru.fedbon.gatewayserver.constants.ErrorMessage.INVALID_TOKEN;
+import static ru.fedbon.gatewayserver.constants.ErrorMessage.MISSING_AUTHORIZATION_HEADER;
+import static ru.fedbon.gatewayserver.constants.PathConstants.API_V1_AUTH;
+import static ru.fedbon.gatewayserver.constants.PathConstants.AUTH_USERNAME_HEADER;
+import static ru.fedbon.gatewayserver.constants.PathConstants.AUTH_USER_ID_HEADER;
+import static ru.fedbon.gatewayserver.constants.PathConstants.SIGN_IN;
+import static ru.fedbon.gatewayserver.constants.PathConstants.SIGN_UP;
+import static ru.fedbon.gatewayserver.constants.PathConstants.VALIDATE_TOKEN;
+import static ru.fedbon.gatewayserver.constants.WebClientConstants.USER_SERVER;
+
 
 @Slf4j
 @Component
 public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> {
 
     private final List<String> permittedEndpoints = List.of(
-            "/api/v1/auth/signup",
-            "/api/v1/auth/signin"
+            API_V1_AUTH + SIGN_UP,
+            API_V1_AUTH + SIGN_IN
     );
 
     private final Predicate<ServerHttpRequest> isSecured = request -> permittedEndpoints.stream()
@@ -47,30 +58,30 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                 String token = extractToken(request);
                 return webClientBuilder.build()
                         .post()
-                        .uri("http://user-server/api/v1/auth/validate?token=" + token)
+                        .uri(USER_SERVER + API_V1_AUTH + VALIDATE_TOKEN + token)
                         .retrieve()
                         .bodyToMono(UserValidationResponse.class)
                         .flatMap(userValidationResponse -> {
                             exchange.getRequest()
                                     .mutate()
-                                    .header("X-auth-user-id", userValidationResponse.getId())
-                                    .header("X-auth-username", userValidationResponse.getUsername());
+                                    .header(AUTH_USER_ID_HEADER, userValidationResponse.getId())
+                                    .header(AUTH_USERNAME_HEADER, userValidationResponse.getUsername());
                             return chain.filter(exchange);
                         });
             } catch (InvalidCredentialsException e) {
-                return Mono.error(e);
+                return Mono.error(new InvalidCredentialsException(INVALID_TOKEN));
             }
         };
     }
 
     private String extractToken(ServerHttpRequest request) {
         if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-            throw new InvalidCredentialsException("Missing authorization information");
+            throw new InvalidCredentialsException(MISSING_AUTHORIZATION_HEADER);
         }
         String authHeader = Objects.requireNonNull(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).get(0);
         String[] tokenParts = authHeader.split(" ");
-        if (tokenParts.length != 2 || !"Bearer".equals(tokenParts[0]) || StringUtils.isEmpty(tokenParts[1])) {
-            throw new InvalidCredentialsException("Invalid token");
+        if (tokenParts.length != 2 || !BEARER.equals(tokenParts[0]) || StringUtils.isEmpty(tokenParts[1])) {
+            throw new InvalidCredentialsException(INVALID_TOKEN);
         }
         return tokenParts[1];
     }
